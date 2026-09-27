@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🥋 Judo Plan d'Entraînement</title>
+<meta name="description" content="Outil de suivi et de planification de la préparation du judoka">
+<style>
+:root {
+  --bg: #0f1419; --surface: #1a2332; --surface2: #1f2b3d;
+  --text: #e8eaed; --muted: #9aa0a6; --gold: #c9a84c; --blue: #3d7dd8;
+  --green: #34d399; --orange: #f59e0b; --red: #ef4444;
+  --border: #2d3748; --radius: 8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+h1{font-size:1.1rem;color:var(--gold);white-space:nowrap}
+h2{font-size:1.3rem;color:var(--gold);margin-bottom:.75rem}
+h3{font-size:1.1rem;color:var(--text);margin-bottom:.5rem}
+h4{font-size:1rem;color:var(--gold);margin:1rem 0 .5rem}
+
+/* HEADER */
+header{background:var(--surface);padding:.75rem 1rem;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--gold);position:sticky;top:0;z-index:100;gap:.5rem;flex-wrap:wrap}
+.header-actions{display:flex;gap:.4rem;align-items:center}
+.header-actions label,.header-actions button{font-size:.75rem;padding:.4rem .7rem}
+
+/* BUTTONS */
+button,.btn{background:var(--surface2);color:var(--text);border:1px solid var(--border);padding:.5rem 1rem;border-radius:var(--radius);cursor:pointer;font-size:.85rem;font-family:inherit;transition:all .2s;display:inline-flex;align-items:center;gap:.3rem}
+button:hover{background:var(--border);transform:translateY(-1px)}
+button:active{transform:translateY(0)}
+.btn-primary{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+.btn-primary:hover{background:#2c6bc4}
+.btn-gold{background:var(--gold);border-color:var(--gold);color:#000;font-weight:600}
+.btn-gold:hover{background:#b8973e}
+.btn-sm{padding:.3rem .6rem;font-size:.75rem}
+.btn-danger{background:var(--red);border-color:var(--red);color:#fff}
+.file-input-label{background:var(--blue);color:#fff;border-radius:var(--radius);padding:.4rem .7rem;cursor:pointer;font-weight:600;display:inline-flex;align-items:center;gap:.3rem;font-size:.75rem;border:1px solid var(--blue);transition:all .2s}
+.file-input-label:hover{background:#2c6bc4}
+#file-import{display:none}
+
+/* TABS */
+.tab-bar{display:flex;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab-btn{flex:1;padding:.7rem .5rem;text-align:center;background:none;border:none;border-bottom:3px solid transparent;color:var(--muted);font-size:.75rem;font-weight:600;cursor:pointer;white-space:nowrap;border-radius:0;transition:all .2s;min-width:0}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);background:rgba(201,168,76,.08)}
+.tab-btn:hover{color:var(--text);background:rgba(255,255,255,.03)}
+
+/* CONTENT */
+.tab-content{display:none;padding:1.5rem 1rem;max-width:1000px;margin:0 auto}
+.tab-content.active{display:block}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;margin-bottom:1rem}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+
+/* FORMS */
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:.3rem;font-weight:500}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:.5rem .75rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);color:var(--text);font-size:.9rem;font-family:inherit}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 2px rgba(201,168,76,.2)}
+.form-group textarea{resize:vertical;min-height:80px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+@media(max-width:500px){.form-row{grid-template-columns:1fr}}
+.form-group select{appearance:auto}
+.checkbox-group{display:flex;flex-wrap:wrap;gap:.5rem}
+.checkbox-label{display:flex;align-items:center;gap:.4rem;font-size:.85rem;cursor:pointer;padding:.3rem .6rem;background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);transition:all .2s}
+.checkbox-label:has(input:checked){border-color:var(--gold);background:rgba(201,168,76,.1)}
+.checkbox-label input{width:auto;margin:0}
+
+/* SLIDERS */
+.slider-wrap{display:flex;align-items:center;gap:.75rem}
+.slider-wrap input[type=range]{flex:1;-webkit-appearance:none;height:8px;border-radius:4px;background:var(--border);outline:none;transition:all .2s}
+.slider-wrap input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid var(--bg);transition:all .2s}
+.slider-val{min-width:2.5rem;text-align:center;font-weight:700;font-size:1.1rem;padding:.2rem .4rem;border-radius:var(--radius)}
+
+/* SINGLE-PAGE FORMS */
+html{scroll-behavior:smooth;scroll-padding-top:8rem}
+.page-intro{margin-bottom:1.25rem}
+.page-intro h2{font-size:1.65rem;margin-bottom:.3rem}
+.page-intro p,.section-description{color:var(--muted);font-size:.9rem}
+.section-nav{display:flex;gap:.5rem;flex-wrap:wrap;margin:1rem 0 1.75rem}
+.section-nav a,.back-to-top{color:var(--text);text-decoration:none;font-size:.85rem}
+.section-nav a{padding:.5rem .8rem;background:var(--surface);border:1px solid var(--border);border-radius:20px}
+.section-nav a:hover{border-color:var(--gold);color:var(--gold)}
+.section-heading{margin:2rem 0 1rem;padding-bottom:.6rem;border-bottom:1px solid var(--border);font-size:1.2rem}
+.evaluation-section{padding:1.25rem}
+.evaluation-section>h3{margin-bottom:1rem}
+.page-actions{position:sticky;bottom:0;z-index:20;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:0 -5px 24px #0003;margin-top:1.5rem}
+.page-actions small{display:block;color:var(--muted);font-size:.75rem}
+.page-actions button{flex-shrink:0}
+.inline-entry{padding:1rem;border:1px solid var(--border);border-radius:var(--radius);margin:1rem 0;background:var(--bg)}
+.inline-entry .form-group input,.inline-entry .form-group select,.inline-entry .form-group textarea{background:var(--surface)}
+.entry-grid,.event-measures{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 1rem}
+.entry-grid .wide{grid-column:1/-1}
+.entry-heading{display:flex;justify-content:space-between;align-items:center;gap:.75rem;margin-bottom:1rem}
+.section-description{margin-bottom:1rem}
+.form-group input[type=checkbox]{width:auto;margin-right:.35rem;accent-color:var(--gold)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.form-row>*{min-width:0}
+@media(max-width:600px){
+  .entry-grid,.event-measures{grid-template-columns:1fr}
+  .page-actions{flex-wrap:wrap;gap:.6rem;padding:.75rem}
+  .page-actions button{width:100%;justify-content:center}
+  .page-actions small{display:none}
+  .card-header{gap:.75rem;flex-wrap:wrap}
+  .evaluation-section{padding:1rem}
+  .tab-btn{font-size:.7rem}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+/* Comfortable touch targets and readable input on phones. */
+button,.btn,.file-input-label,.section-nav a,.back-to-top{min-height:44px;min-width:44px;align-items:center}
+.section-nav a,.back-to-top{display:inline-flex}
+.form-group input:not([type=checkbox]):not([type=range]),.form-group select{min-height:48px}
+.form-group input,.form-group select,.form-group textarea{font-size:16px}
+.form-group label{color:var(--text);font-size:.95rem}
+.checkbox-label{min-height:48px;padding:.65rem}
+.form-group label:has(input[type=checkbox]){min-height:44px;display:flex;align-items:center;gap:.4rem}
+.form-group input[type=checkbox]{width:22px;height:22px;flex-shrink:0}
+.slider-wrap input[type=range]{height:44px;background:linear-gradient(var(--border),var(--border)) center/100% 6px no-repeat;padding:0;border:0;box-shadow:none}
+.slider-wrap input[type=range]::-webkit-slider-thumb{background:var(--gold);width:28px;height:28px}
+.slider-wrap input[type=range]::-moz-range-thumb{background:var(--gold);width:26px;height:26px;border:2px solid var(--bg);border-radius:50%}
+.slider-wrap input[type=range]::-moz-range-track{background:var(--border);height:6px}
+.slider-val{font-size:1rem;min-width:58px;color:var(--gold)}
+.draft-status{font-size:.8rem;color:var(--muted);max-width:1000px;padding:.5rem 1rem;margin:auto}
+.field-hint{display:block;color:var(--muted);font-size:.8rem;margin-top:.2rem}
+.badge-gray{background:var(--surface2);color:var(--muted)}
+.tab-icon{font-size:1.2rem}
+.tab-btn{display:flex;justify-content:center;gap:.4rem;align-items:center;font-size:.85rem}
+#toast-container{max-width:calc(100vw - 2rem);bottom:7rem}
+@media(max-width:600px){
+  body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+  header{position:static;padding:.6rem .8rem}
+  html{scroll-padding-top:1rem;scroll-padding-bottom:170px}
+  .tab-content{padding:1rem .75rem}
+  .tab-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom)}
+  .tab-btn{flex-direction:column;gap:0;min-height:64px;font-size:.75rem;padding:.35rem .15rem;border-bottom:0;border-top:3px solid transparent}
+  .tab-btn.active{border-top-color:var(--gold)}
+  .page-actions{bottom:calc(66px + env(safe-area-inset-bottom))}
+  .page-actions>div{display:none}
+  .page-actions button{min-height:48px;font-size:1rem}
+  .page-intro h2{font-size:1.45rem}
+  .section-nav{gap:.4rem;margin-bottom:1rem}
+  .section-nav a{font-size:.85rem}
+  .form-row{grid-template-columns:1fr}
+  #toast-container{bottom:calc(155px + env(safe-area-inset-bottom))}
+}
+
+/* WELCOME */
+.welcome{text-align:center;padding:3rem 1rem}
+.welcome h2{font-size:1.5rem;margin-bottom:1rem}
+.welcome p{color:var(--muted);margin-bottom:1.5rem;max-width:500px;margin-left:auto;margin-right:auto}
+.welcome-actions{display:flex;flex-direction:column;gap:.75rem;align-items:center}
+.welcome-actions button{min-width:250px}
+
+/* SUMMARY INDICATORS */
+.axis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:.5rem}
+.axis-card{display:flex;align-items:center;gap:.5rem;padding:.5rem .75rem;background:var(--bg);border-radius:var(--radius);border:1px solid var(--border)}
+.axis-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.axis-dot.green{background:var(--green)}
+.axis-dot.orange{background:var(--orange)}
+.axis-dot.red{background:var(--red)}
+.axis-dot.gray{background:var(--muted)}
+.axis-label{font-size:.8rem}
+
+/* TABLES */
+.table-wrap{overflow-x:auto;margin:.5rem 0}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+th{text-align:left;padding:.5rem;background:var(--surface2);color:var(--gold);border-bottom:2px solid var(--border);font-weight:600;white-space:nowrap}
+td{padding:.5rem;border-bottom:1px solid var(--border)}
+tr:hover td{background:rgba(255,255,255,.02)}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:2rem}
+.timeline::before{content:'';position:absolute;left:.6rem;top:0;bottom:0;width:2px;background:var(--border)}
+.timeline-item{position:relative;margin-bottom:1.5rem;padding-left:.5rem}
+.timeline-item::before{content:'';position:absolute;left:-1.65rem;top:.5rem;width:12px;height:12px;border-radius:50%;background:var(--blue);border:2px solid var(--bg)}
+.timeline-item.competition::before{background:var(--red)}
+.timeline-item.grade::before{background:var(--gold)}
+.timeline-item.today::before{background:var(--green);box-shadow:0 0 8px var(--green)}
+.timeline-date{font-size:.75rem;color:var(--muted)}
+.timeline-title{font-weight:600}
+
+/* RADAR */
+.radar-container{display:flex;justify-content:center;padding:1rem 0}
+canvas{max-width:100%}
+
+/* TOAST */
+#toast-container{position:fixed;bottom:1rem;right:1rem;z-index:999;display:flex;flex-direction:column;gap:.5rem}
+.toast{background:var(--surface2);color:var(--text);padding:.75rem 1rem;border-radius:var(--radius);border-left:4px solid var(--green);box-shadow:0 4px 12px rgba(0,0,0,.3);animation:slideIn .3s ease;font-size:.85rem}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* MISC */
+.hidden{display:none!important}
+.mt-1{margin-top:.5rem}.mt-2{margin-top:1rem}.mb-1{margin-bottom:.5rem}
+.text-muted{color:var(--muted)}.text-green{color:var(--green)}.text-orange{color:var(--orange)}.text-red{color:var(--red)}.text-gold{color:var(--gold)}
+.text-center{text-align:center}
+.flex-between{display:flex;justify-content:space-between;align-items:center}
+.badge{display:inline-block;padding:.15rem .5rem;border-radius:10px;font-size:.7rem;font-weight:600}
+.badge-green{background:rgba(52,211,153,.15);color:var(--green)}
+.badge-orange{background:rgba(245,158,11,.15);color:var(--orange)}
+.badge-red{background:rgba(239,68,68,.15);color:var(--red)}
+hr{border:none;border-top:1px solid var(--border);margin:1rem 0}
+.info-box{background:rgba(61,125,216,.1);border:1px solid rgba(61,125,216,.3);border-radius:var(--radius);padding:.75rem;margin-bottom:1rem;font-size:.85rem}
+.alert-box{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:var(--radius);padding:.75rem;margin-bottom:1rem;font-size:.85rem;color:var(--red)}
+.select-score{width:80px!important;min-height:48px;padding:.5rem;font-size:16px;text-align:center;background:var(--bg);color:var(--text);border:1px solid var(--border);border-radius:var(--radius)}
+#toast-container{bottom:7rem;max-width:calc(100vw - 2rem)}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+@media(max-width:600px){
+  #toast-container{bottom:calc(155px + env(safe-area-inset-bottom))}
+  .page-intro{margin-bottom:.5rem}
+  .draft-status{padding:.4rem .8rem;font-size:.75rem}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <h1>🥋 Judo Plan</h1>
+  <div class="header-actions">
+    <label class="file-input-label" for="file-import">📂 Importer</label>
+    <input type="file" id="file-import" accept=".md,.txt,.markdown">
+    <button class="btn-gold btn-sm" onclick="exportProfile()" id="btn-export" disabled>💾 Exporter</button>
+  </div>
+</header>
+
+<!-- TAB BAR -->
+<nav class="tab-bar" id="tab-bar">
+  <button class="tab-btn active" onclick="switchTab('dashboard',this)" aria-current="page"><span class="tab-icon" aria-hidden="true">📊</span> Mon bilan</button>
+  <button class="tab-btn" onclick="switchTab('evaluation',this)"><span class="tab-icon" aria-hidden="true">📋</span> Évaluation</button>
+  <button class="tab-btn" onclick="switchTab('plan',this)"><span class="tab-icon" aria-hidden="true">📅</span> Mon plan</button>
+  <button class="tab-btn" onclick="switchTab('event',this)"><span class="tab-icon" aria-hidden="true">🏆</span> Événement</button>
+</nav>
+<p class="draft-status" id="draft-status" role="status">Ton brouillon reste sur cet appareil. Exporte ton profil pour le garder.</p>
+
+<!-- ==================== DASHBOARD TAB ==================== -->
+<div class="tab-content active" id="tab-dashboard">
+  <!-- Welcome screen (shown when no profile) -->
+  <div id="welcome-screen" class="welcome">
+    <h2>🥋 Bienvenue, Judoka !</h2>
+    <p>Cet outil vous accompagne dans votre préparation. Commencez par importer votre profil existant ou créez-en un nouveau via l'évaluation.</p>
+    <div class="welcome-actions">
+      <label class="file-input-label" for="file-import" style="font-size:.9rem;padding:.6rem 1.5rem">📂 Importer un profil (.md)</label>
+      <button class="btn-primary" onclick="switchTab('evaluation',document.querySelectorAll('.tab-btn')[1])" style="font-size:.9rem;padding:.6rem 1.5rem">📋 Nouvelle évaluation</button>
+    </div>
+    <p class="mt-2 text-muted" style="font-size:.8rem">Conseil : consultez <code>exemples/profil_exemple.md</code> pour voir le format du fichier profil.</p>
+  </div>
+  <!-- Dashboard content (shown when profile loaded) -->
+  <div id="dashboard-content" class="hidden">
+    <div class="card" id="profile-card"></div>
+    <div class="card"><h3>🎯 Profil multidimensionnel</h3><div class="radar-container"><canvas id="radarChart" width="380" height="380"></canvas></div></div>
+    <div id="alerts-container"></div>
+    <div class="card" id="evolution-card"><h3>📈 Évolution</h3><div class="table-wrap" id="evolution-table"></div></div>
+    <div class="card" id="plan-timeline-card"><h3>📅 Mon plan</h3><div id="plan-timeline"></div></div>
+    <div class="card"><h3>🎯 Objectifs</h3><div id="objectives-display"></div></div>
+    <div class="card"><h3>🏆 Événements</h3><div id="events-display"></div></div>
+  </div>
+</div>
+
+<!-- ==================== EVALUATION TAB ==================== -->
+<div class="tab-content" id="tab-evaluation">
+  <div class="page-intro" id="evaluation-top">
+    <h2>Mon évaluation</h2>
+    <p>Remplis ce que tu connais. Tu pourras compléter les tests plus tard.</p>
+  </div>
+  <p class="field-hint">Prénom et naissance obligatoires. Le reste est facultatif.</p>
+  <nav class="section-nav" id="evaluation-nav" aria-label="Rubriques de l’évaluation"></nav>
+  <form id="eval-form" onsubmit="return false">
+    <div id="evaluation-sections"></div>
+  </form>
+  <div class="page-actions">
+    <div><a class="back-to-top" href="#evaluation-top">↑ Haut de page</a><small>Après l’enregistrement, exportez votre profil pour le conserver.</small></div>
+    <button class="btn-gold" onclick="finishEval()">Enregistrer l’évaluation</button>
+  </div>
+</div>
+
+<!-- ==================== PLAN TAB ==================== -->
+<div class="tab-content" id="tab-plan">
+  <div id="plan-no-profile" class="welcome">
+    <p class="text-muted">Créez votre profil depuis l’évaluation ou importez un fichier pour préparer votre saison.</p>
+    <button class="btn-primary" onclick="switchTab('evaluation',document.querySelectorAll('.tab-btn')[1])">Créer mon profil</button>
+  </div>
+  <div id="plan-content" class="hidden">
+    <div class="page-intro" id="plan-top"><h2>Mon plan de préparation</h2><p>Ajoute tes périodes et tes rendez-vous. Tout se modifie ici.</p></div>
+    <nav class="section-nav" aria-label="Rubriques du plan"><a href="#plan-periods">Périodes</a><a href="#plan-deadlines">Échéances</a><a href="#plan-life">Vie personnelle</a><a href="#plan-mental">Préparation mentale</a></nav>
+    <!-- Periods -->
+    <div class="card" id="plan-periods">
+      <div class="card-header"><h3>📆 Périodes de préparation</h3><button class="btn-sm btn-primary" onclick="addPeriod()">+ Une période</button></div>
+      <p class="section-description">Les grands blocs de ta saison et leurs priorités.</p>
+      <div id="periods-list"></div>
+    </div>
+    <!-- Deadlines -->
+    <div class="card" id="plan-deadlines">
+      <div class="card-header"><h3>📌 Échéances</h3><button class="btn-sm btn-primary" onclick="addDeadline()">+ Une échéance</button></div>
+      <div class="mb-1"><button class="btn-sm" onclick="document.getElementById('ics-import').click()">📅 Importer ICS</button><button class="btn-sm" onclick="document.getElementById('csv-import').click()">📄 Importer CSV</button></div>
+      <input type="file" id="ics-import" accept=".ics" class="hidden" onchange="importICS(event)">
+      <input type="file" id="csv-import" accept=".csv" class="hidden" onchange="importCSV(event)">
+      <div id="deadlines-list"></div>
+    </div>
+    <!-- Life calendar -->
+    <div class="card" id="plan-life">
+      <div class="card-header"><h3>🏖️ Vie personnelle</h3><button class="btn-sm btn-primary" onclick="addLifeEvent()">+ Une période</button></div>
+      <p class="section-description">Vacances, examens, travail : garde tes disponibilités en vue.</p>
+      <div id="life-events-list"></div>
+    </div>
+    <!-- Mental prep -->
+    <div class="card" id="plan-mental" oninput="syncPlanMental()">
+      <h3>🧠 Préparation mentale</h3>
+      <div class="form-group"><label>Projet personnel</label><textarea id="plan-projet" rows="3" placeholder="Pourquoi je fais du judo ? Mon objectif de saison..."></textarea></div>
+      <div class="form-group"><label>Mes mots pour me motiver (séparés par des virgules)</label><input type="text" id="plan-selftalk" placeholder="POSTURE, MAINS, AVANCE, RESPIRE, ATTAQUE"></div>
+      <div class="form-group"><label>Routine pré-compétition (une étape par ligne)</label><textarea id="plan-routine-comp" rows="4" placeholder="Préparer judogi la veille&#10;Petit-déjeuner 3h avant&#10;..."></textarea></div>
+      <div class="form-group"><label>Routine pré-entraînement (une étape par ligne)</label><textarea id="plan-routine-train" rows="3" placeholder="Poser le téléphone&#10;Mobilité 5min&#10;..."></textarea></div>
+    </div>
+    <div class="page-actions"><div><a class="back-to-top" href="#plan-top">↑ Haut de page</a><small>Modifications conservées sur cette page. Exportez le profil pour les garder.</small></div><button class="btn-gold" onclick="savePlanData()">Enregistrer le plan</button></div>
+  </div>
+</div>
+
+<!-- ==================== EVENT TAB ==================== -->
+<div class="tab-content" id="tab-event">
+  <div id="event-no-profile" class="welcome"><p class="text-muted">Créez ou importez votre profil pour raconter votre événement.</p><button class="btn-primary" onclick="switchTab('evaluation',document.querySelectorAll('.tab-btn')[1])">Créer mon profil</button></div>
+  <div id="event-content" class="hidden">
+    <div class="page-intro" id="event-top"><h2>Mon événement</h2><p>Le nom et la date suffisent. Ajoute ton résultat et ton ressenti si tu le souhaites.</p></div>
+    <nav class="section-nav" aria-label="Rubriques de l’événement"><a href="#event-info">Informations</a><a href="#ev-results-comp" id="event-results-link">Résultats</a><a href="#event-before">Avant</a><a href="#event-during">Pendant</a><a href="#event-after">Après</a></nav>
+    <form id="event-form" onsubmit="return false">
+    <div class="card" id="event-info">
+      <h3>🏆 Informations</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Type</label><select id="ev-type" onchange="updateEventForm()"><option value="Competition">🏆 Compétition</option><option value="Grade">🥋 Passage de grade</option><option value="Autre">📋 Autre</option></select></div>
+        <div class="form-group"><label>Date (obligatoire)</label><input type="date" id="ev-date" required></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Nom (obligatoire)</label><input type="text" id="ev-name" placeholder="Championnat départemental..." required></div>
+        <div class="form-group"><label>Lieu</label><input type="text" id="ev-lieu"></div>
+      </div>
+      <div class="form-group"><label>Catégorie</label><input type="text" id="ev-cat" placeholder="-50kg"></div>
+    </div>
+    <!-- Results -->
+    <div class="card" id="ev-results-comp">
+      <h3>📊 Résultats</h3>
+      <div class="form-row">
+        <div class="form-group"><label>Classement</label><input type="text" id="ev-classement" placeholder="3ème"></div>
+        <div class="form-group"><label>Combats</label><input type="number" id="ev-combats" min="0"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Victoires</label><input type="number" id="ev-victoires" min="0"></div>
+        <div class="form-group"><label>Défaites</label><input type="number" id="ev-defaites" min="0"></div>
+      </div>
+    </div>
+    <!-- State BEFORE -->
+    <div class="card" id="event-before">
+      <h3>📋 Avant — ma préparation</h3>
+      <div id="ev-before-sliders" class="event-measures"></div>
+      <div class="form-row">
+        <div class="form-group"><label><input type="checkbox" id="ev-alim-ok"> Alimentation correcte</label></div>
+        <div class="form-group"><label><input type="checkbox" id="ev-echauff-ok"> Échauffement fait</label></div>
+      </div>
+      <div class="form-group"><label><input type="checkbox" id="ev-routine-ok"> Routine mentale faite</label></div>
+      <div class="form-group"><label>Notes</label><textarea id="ev-before-notes" rows="2"></textarea></div>
+    </div>
+    <!-- State DURING -->
+    <div class="card" id="event-during">
+      <h3>⚔️ Pendant — mon ressenti</h3>
+      <div id="ev-during-sliders" class="event-measures"></div>
+      <div class="form-group"><label>As-tu réussi à imposer ta garde ?</label><select id="ev-kumi"><option value="">Choisir…</option><option>Toujours</option><option>Parfois</option><option>Rarement</option><option>Jamais</option></select></div>
+      <div class="form-group"><label>Notes</label><textarea id="ev-during-notes" rows="2"></textarea></div>
+    </div>
+    <!-- State AFTER -->
+    <div class="card" id="event-after">
+      <h3>🏁 Après — mon bilan</h3>
+      <div id="ev-after-sliders" class="event-measures"></div>
+      <div class="form-group"><label><input type="checkbox" id="ev-blessure"> Blessure</label></div>
+      <div class="form-group"><label>Apprentissages</label><textarea id="ev-apprentissages" rows="2" placeholder="Ce que j'ai appris..."></textarea></div>
+      <div class="form-group"><label>À travailler</label><textarea id="ev-a-travailler" rows="2" placeholder="Axes d'amélioration..."></textarea></div>
+      <div class="form-group"><label>Notes</label><textarea id="ev-after-notes" rows="2"></textarea></div>
+    </div>
+    </form>
+    <div class="page-actions"><div><a class="back-to-top" href="#event-top">↑ Haut de page</a><small>Après l’enregistrement, exportez votre profil pour le conserver.</small></div><button class="btn-gold" onclick="saveEvent()">Enregistrer l’événement</button></div>
+  </div>
+</div>
+
+<div id="toast-container" role="status" aria-live="polite"></div>
+
+<script>
+// ============================================================
+// DATA MODEL
+// ============================================================
+let D = {
+  profil: {}, attaque: {}, objectifs: [], difficultes: [],
+  evaluations: [], plan: { periodes: [], echeances: [], vie: [], mental: {} },
+  evenements: []
+};
+let hasProfile = false;
+
+// ============================================================
+// UTILITIES
+// ============================================================
+function toast(msg, type='success', undo=null) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  if (type === 'error') t.style.borderLeftColor = 'var(--red)';
+  else if (type === 'warn') t.style.borderLeftColor = 'var(--orange)';
+  t.textContent = msg;
+  if (undo) {
+    const button = document.createElement('button');
+    button.textContent = 'Annuler';
+    button.type = 'button';
+    button.addEventListener('click', () => { undo(); t.remove(); });
+    t.append(' ', button);
+  }
+  document.getElementById('toast-container').appendChild(t);
+  setTimeout(() => t.remove(), undo ? 10000 : 5000);
+}
+
+function getAge(dob) {
+  if (!dob) return null;
+  const d = new Date(dob), now = new Date();
+  let a = now.getFullYear() - d.getFullYear();
+  if (now.getMonth() < d.getMonth() || (now.getMonth() === d.getMonth() && now.getDate() < d.getDate())) a--;
+  return a;
+}
+
+function isAdolescent() { return getAge(D.profil.date_naissance) !== null && getAge(D.profil.date_naissance) < 18; }
+function isFemale() { return (D.profil.sexe || '').toLowerCase() === 'femme'; }
+function fmt(v) { return v !== undefined && v !== null && v !== '' ? v : '—'; }
+
+// ============================================================
+// TAB SWITCHING
+// ============================================================
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => { el.classList.remove('active'); el.removeAttribute('aria-current'); });
+  document.getElementById('tab-' + name).classList.add('active');
+  if (btn) { btn.classList.add('active'); btn.setAttribute('aria-current','page'); }
+  if (name === 'dashboard') renderDashboard();
+  if (name === 'plan') renderPlan();
+  if (name === 'event') renderEventTab();
+  window.scrollTo({top:0,behavior:'instant'});
+  scheduleDraft();
+}
+
+// ============================================================
+// SLIDER BUILDER
+// ============================================================
+function buildSlider(name, label, max=10) {
+  return `<div class="form-group"><label for="field-${name}">${label}</label><div class="slider-wrap">
+    <input type="range" id="field-${name}" name="${name}" min="0" max="${max}" value="${Math.round(max/2)}" oninput="this.dataset.answered='true';updateSlider(this)" aria-valuetext="Non renseigné">
+    <output class="slider-val" for="field-${name}">—</output>
+  </div>${label.includes('0=') ? '' : `<small class="field-hint">Note de 0 à ${max} · laisse vide si tu ne sais pas.</small>`}</div>`;
+}
+
+function updateSlider(el) {
+  const answered = el.dataset.answered === 'true';
+  el.nextElementSibling.textContent = answered ? `${el.value}/${el.max}` : '—';
+  el.setAttribute('aria-valuetext', answered ? `${el.value} sur ${el.max}` : 'Non renseigné');
+}
+
+function initSliders(container) {
+  (container || document).querySelectorAll('input[type=range]').forEach(el => updateSlider(el));
+}
+
+// ============================================================
+// EVALUATION FORM
+// ============================================================
+const EVALUATION_SECTIONS = [];
+
+function defineEvaluationSections() {
+  EVALUATION_SECTIONS.length = 0;
+
+  // Step 1: Profil
+  EVALUATION_SECTIONS.push({ title: '👤 Profil', id: 'profil', html: `
+    <p class="section-description">Ton identité est reprise automatiquement lors des prochains bilans.</p>
+    <div class="form-row">
+      <div class="form-group"><label>Prénom (obligatoire)</label><input type="text" name="prenom" required></div>
+      <div class="form-group"><label>Date de naissance (obligatoire)</label><input type="date" name="date_naissance" required onchange="updateEvaluationContext()"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Sexe</label><select name="sexe" onchange="updateEvaluationContext()"><option value="Homme">Homme</option><option value="Femme">Femme</option></select></div>
+      <div class="form-group"><label>Latéralité</label><select name="lateralite"><option value="Droitier">Droitier</option><option value="Gaucher">Gaucher</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Club</label><input type="text" name="club"></div>
+      <div class="form-group"><label>Grade</label><input type="text" name="grade" placeholder="Ceinture verte"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Catégorie de poids</label><input type="text" name="categorie_poids" placeholder="-50kg"></div>
+      <div class="form-group"><label>Entraînements / semaine</label><input type="number" name="entrainements_semaine" min="0" max="20"></div>
+    </div>
+    <div class="form-group"><label>Année début judo</label><input type="number" name="annee_debut_judo" min="1950" max="2030"></div>
+  `});
+
+  // Step 2: Système d'attaque
+  EVALUATION_SECTIONS.push({ title: '⚔️ Système d\'attaque', id: 'attaque', html: `
+    <div class="info-box">Décrivez votre système d'attaque : techniques favorites, enchaînements, travail au sol.</div>
+    <div class="form-group"><label>Tokui-waza (séparés par des virgules)</label><input type="text" name="tokui_waza" placeholder="uchi-mata, o-soto-gari"></div>
+    <div class="form-group"><label>Attaques secondaires</label><input type="text" name="attaques_secondaires" placeholder="ko-uchi-gari, de-ashi-barai"></div>
+    <div class="form-group"><label>Enchaînements (séparés par |)</label><input type="text" name="enchainements" placeholder="ko-uchi-gari → uchi-mata | o-uchi-gari → o-soto-gari"></div>
+    <div class="form-group"><label>Contres</label><input type="text" name="contres" placeholder="uchi-mata-sukashi"></div>
+    <div class="form-group"><label>Garde préférée</label><input type="text" name="garde_preferee" placeholder="classique main droite revers, main gauche manche"></div>
+    <div class="form-group"><label>Ne-waza immobilisations</label><input type="text" name="newaza_immobilisations" placeholder="kesa-gatame, yoko-shiho-gatame"></div>
+    <div class="form-group"><label>Ne-waza retournements</label><input type="text" name="newaza_retournements"></div>
+    <div class="form-group"><label>Transitions</label><input type="text" name="transitions" placeholder="après attaque ratée → contrôle tortue"></div>
+    <div class="form-group"><label>Comportement vs gaucher</label><input type="text" name="vs_gaucher"></div>
+  `});
+
+  // Step 3: Croissance (ados)
+  EVALUATION_SECTIONS.push({ title: '🧒 Croissance & Santé', id: 'croissance', condition: () => isAdolescent(), html: `
+    <div class="info-box">Ces mesures servent à suivre ta croissance.</div>
+    <div class="form-row">
+      <div class="form-group"><label>Taille (cm)</label><input type="number" name="taille_cm" step="0.1"></div>
+      <div class="form-group"><label>Poids (kg)</label><input type="number" name="poids_kg" step="0.1"></div>
+    </div>
+    ${buildSlider('douleurs_croissance', 'Douleurs liées à la croissance (0=aucune, 10=très fortes)')}
+    ${buildSlider('coordination_ressentie', 'Coordination ressentie (0=mauvaise, 10=excellente)')}
+  `});
+
+  // Step 4: Sommeil
+  EVALUATION_SECTIONS.push({ title: '😴 Sommeil', id: 'sommeil', html: `
+    <div class="form-group"><label>Durée moyenne de sommeil sur 7 jours (heures)</label><input type="number" name="sommeil_duree" step="0.1" placeholder="8.5"></div>
+    ${buildSlider('sommeil_qualite', 'Qualité du sommeil (0=très mauvaise, 10=excellente)')}
+    ${buildSlider('fatigue_reveil', 'Fatigue au réveil (0=aucune, 10=extrême)')}
+    ${buildSlider('difficulte_endormissement', 'Difficulté d\'endormissement (0=aucune, 10=très difficile)')}
+    <div class="form-group"><label>Réveils nocturnes (nombre moyen)</label><input type="number" name="reveils_nocturnes" min="0"></div>
+    <div class="form-row">
+      <div class="form-group"><label>Heure de coucher</label><input type="time" name="heure_coucher"></div>
+      <div class="form-group"><label>Heure de lever</label><input type="time" name="heure_lever"></div>
+    </div>
+  `});
+
+  // Step 5: Mobilité
+  EVALUATION_SECTIONS.push({ title: '🤸 Mobilité', id: 'mobilite', html: `
+    <div class="info-box">Comparez toujours droite/gauche. Une asymétrie importante doit être comprise.</div>
+    <h4>Cheville — Knee-to-wall (cm)</h4>
+    <div class="form-row">
+      <div class="form-group"><label>Droite</label><input type="number" name="ktw_d" step="0.1"></div>
+      <div class="form-group"><label>Gauche</label><input type="number" name="ktw_g" step="0.1"></div>
+    </div>
+    <h4>Hanche — Rotation interne (°)</h4>
+    <div class="form-row">
+      <div class="form-group"><label>Droite</label><input type="number" name="rot_int_d"></div>
+      <div class="form-group"><label>Gauche</label><input type="number" name="rot_int_g"></div>
+    </div>
+    <h4>Hanche — Rotation externe (°)</h4>
+    <div class="form-row">
+      <div class="form-group"><label>Droite</label><input type="number" name="rot_ext_d"></div>
+      <div class="form-group"><label>Gauche</label><input type="number" name="rot_ext_g"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Flexion hanche (°)</label><input type="number" name="flexion_hanche"></div>
+      <div class="form-group"><label>Rotation thoracique (°)</label><input type="number" name="rot_thoracique"></div>
+    </div>
+    <h4>Épaule — Mobilité (°)</h4>
+    <div class="form-row">
+      <div class="form-group"><label>Droite</label><input type="number" name="mob_epaule_d"></div>
+      <div class="form-group"><label>Gauche</label><input type="number" name="mob_epaule_g"></div>
+    </div>
+    <div class="form-group"><label><input type="checkbox" name="douleur_mobilite"> Douleur pendant un test de mobilité</label></div>
+  `});
+
+  // Step 6: Souplesse
+  EVALUATION_SECTIONS.push({ title: '🧘 Souplesse', id: 'souplesse', html: `
+    <h4>Straight Leg Raise (°)</h4>
+    <div class="form-row">
+      <div class="form-group"><label>Droite</label><input type="number" name="slr_d"></div>
+      <div class="form-group"><label>Gauche</label><input type="number" name="slr_g"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Sit-and-Reach (cm)</label><input type="number" name="sit_reach" step="0.1"></div>
+      <div class="form-group"><label>Dorsiflexion cheville (cm)</label><input type="number" name="dorsiflexion" step="0.1"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Rotations hanche (°)</label><input type="number" name="rot_hanche_souplesse"></div>
+      <div class="form-group"><label>Amplitude épaule (°)</label><input type="number" name="amp_epaule"></div>
+    </div>
+  `});
+
+  // Step 7: Force
+  EVALUATION_SECTIONS.push({ title: '💪 Force & Préhension', id: 'force', html: `
+    <div class="form-row">
+      <div class="form-group"><label>Squat (charge kg ou RPE)</label><input type="text" name="squat" placeholder="60kg ou RPE 7"></div>
+      <div class="form-group"><label>Tirage (reps ou charge)</label><input type="text" name="tirage" placeholder="5 reps"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Poussée (reps ou charge)</label><input type="text" name="poussee" placeholder="20 reps"></div>
+      <div class="form-group"><label>Chaîne postérieure (RPE)</label><input type="text" name="chaine_post" placeholder="RPE 5"></div>
+    </div>
+    <div class="form-group"><label>Gainage (secondes)</label><input type="number" name="gainage" min="0"></div>
+    <h4>✊ Préhension — Dynamomètre (kg)</h4>
+    <div class="form-row">
+      <div class="form-group"><label>Main droite</label><input type="number" name="grip_d" step="0.1"></div>
+      <div class="form-group"><label>Main gauche</label><input type="number" name="grip_g" step="0.1"></div>
+    </div>
+    ${buildSlider('qualite_tech_force', 'Qualité du mouvement (0=à travailler, 3=maîtrisé)', 3)}
+  `});
+
+  // Step 8: Explosivité
+  EVALUATION_SECTIONS.push({ title: '💥 Sauts et vitesse', id: 'explosivite', html: `
+    <div class="form-group"><label>CMJ — Saut vertical (cm)</label><input type="number" name="cmj" step="0.1"></div>
+    <div class="form-group"><label>Saut horizontal pieds joints (cm)</label><input type="number" name="saut_horizontal" step="0.1"></div>
+    <div class="form-group"><label>Sprint 10m (secondes)</label><input type="number" name="sprint_10m" step="0.01"></div>
+  `});
+
+  // Step 9: Explosivité spécifique judo
+  EVALUATION_SECTIONS.push({ title: '🥋 Explosivité judo', id: 'explo_judo', html: `
+    <div class="form-row">
+      <div class="form-group"><label>Uchi-komi rapides (reps en 30s)</label><input type="number" name="uchikomi_30s"></div>
+      <div class="form-group"><label>Nage-komi (reps en 30s)</label><input type="number" name="nagekomi_30s"></div>
+    </div>
+    <div class="form-row">
+      ${buildSlider('qualite_serie1', 'Qualité technique série 1', 3)}
+      ${buildSlider('qualite_derniere_serie', 'Qualité dernière série', 3)}
+    </div>
+    <div class="form-group"><label>Dégradation entre séries (%)</label><input type="number" name="degradation_pct" min="0" max="100"></div>
+    ${buildSlider('rpe_explo', 'Effort ressenti (0=aucun, 10=maximal)')}
+  `});
+
+  // Step 10: Aérobie
+  EVALUATION_SECTIONS.push({ title: '❤️ Endurance', id: 'aerobie', html: `
+    <div class="info-box">Test navette 20m (Léger) ou test similaire.</div>
+    <div class="form-row">
+      <div class="form-group"><label>Palier atteint</label><input type="number" name="navette_palier"></div>
+      <div class="form-group"><label>Vitesse finale (km/h)</label><input type="number" name="navette_vitesse" step="0.1"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>FC fin d'effort (bpm)</label><input type="number" name="fc_fin"></div>
+      <div class="form-group"><label>FC après 1 minute (bpm)</label><input type="number" name="fc_1min"></div>
+    </div>
+  `});
+
+  // Step 11: SJFT
+  EVALUATION_SECTIONS.push({ title: '🥋 SJFT', id: 'sjft', html: `
+    <div class="info-box">Special Judo Fitness Test — 15s + 30s + 30s avec 10s de repos.<br>Indice = (FC fin + FC 1min) / projections. <strong>Plus bas = meilleur.</strong></div>
+    <div class="form-group"><label>Nombre total de projections</label><input type="number" name="sjft_projections" oninput="calcSJFT()"></div>
+    <div class="form-row">
+      <div class="form-group"><label>FC fin d'exercice (bpm)</label><input type="number" name="sjft_fc_fin" oninput="calcSJFT()"></div>
+      <div class="form-group"><label>FC après 1 minute (bpm)</label><input type="number" name="sjft_fc_1min" oninput="calcSJFT()"></div>
+    </div>
+    <div class="card" style="text-align:center;margin-top:1rem"><strong>Indice SJFT :</strong> <span id="sjft-index" class="text-gold" style="font-size:1.3rem">—</span></div>
+  `});
+
+  // Step 12: Anaérobie
+  EVALUATION_SECTIONS.push({ title: '❤️‍🔥 Répéter les efforts', id: 'anaerobie', html: `
+    <div class="info-box">Comparer le nombre de répétitions entre première et dernière série.</div>
+    <div class="form-row">
+      <div class="form-group"><label>Reps première série</label><input type="number" name="anaero_first" oninput="calcLoss()"></div>
+      <div class="form-group"><label>Reps dernière série</label><input type="number" name="anaero_last" oninput="calcLoss()"></div>
+    </div>
+    ${buildSlider('anaero_qualite', 'Qualité technique dernière série', 3)}
+    <div class="card" style="text-align:center;margin-top:1rem"><strong>Perte de rendement :</strong> <span id="loss-pct" class="text-gold" style="font-size:1.3rem">—</span></div>
+  `});
+
+  // Step 13: Nutrition
+  EVALUATION_SECTIONS.push({ title: '🥗 Nutrition', id: 'nutrition', html: `
+    <div class="form-group"><label>Régularité des repas</label><select name="repas_regularite"><option value="Régulier">Régulier</option><option value="Occasionnel">Repas sautés occasionnellement</option><option value="Irrégulier">Repas régulièrement supprimés</option></select></div>
+    <div class="form-group"><label>Petit-déjeuner</label><select name="petit_dejeuner"><option value="Toujours">Toujours</option><option value="Parfois">Parfois</option><option value="Jamais">Jamais</option></select></div>
+    <div class="form-row">
+      <div class="form-group"><label>Repas avant entraînement</label><select name="repas_avant"><option value="Oui">Oui</option><option value="Parfois">Parfois</option><option value="Non">Non</option></select></div>
+      <div class="form-group"><label>Collation après entraînement</label><select name="collation_apres"><option value="Oui">Oui</option><option value="Parfois">Parfois</option><option value="Non">Non</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Fruits et légumes</label><select name="fruits_legumes"><option value="≥5/jour">≥5 par jour</option><option value="2-4/jour">2-4 par jour</option><option value="<2/jour">&lt;2 par jour</option></select></div>
+      <div class="form-group"><label>Hydratation</label><select name="hydratation"><option value="Bonne">Bonne</option><option value="Moyenne">Moyenne</option><option value="Insuffisante">Insuffisante</option></select></div>
+    </div>
+    <div class="form-group"><label><input type="checkbox" name="restriction_poids"> ⚠️ Restriction alimentaire pour faire le poids</label></div>
+    <div class="form-group"><label>Variation poids pendant entraînement (kg)</label><input type="number" name="variation_poids" step="0.1" placeholder="0.8"></div>
+  `});
+
+  // Step 14: RED-S
+  EVALUATION_SECTIONS.push({ title: '⚠️ RED-S', id: 'reds', html: `
+    <div class="info-box">Signalez les symptômes présents. <strong>3 signaux ou plus = consulter un professionnel.</strong></div>
+    <div class="checkbox-group" style="flex-direction:column">
+      <label class="checkbox-label"><input type="checkbox" name="reds_fatigue"> Fatigue chronique</label>
+      <label class="checkbox-label"><input type="checkbox" name="reds_perf"> Baisse inexpliquée de performance</label>
+      <label class="checkbox-label"><input type="checkbox" name="reds_poids"> Perte de poids involontaire</label>
+      <label class="checkbox-label"><input type="checkbox" name="reds_blessures"> Blessures récurrentes</label>
+      <label class="checkbox-label"><input type="checkbox" name="reds_os"> Douleurs osseuses</label>
+      <label class="checkbox-label"><input type="checkbox" name="reds_irritabilite"> Irritabilité</label>
+      <label class="checkbox-label"><input type="checkbox" name="reds_sommeil"> Troubles du sommeil</label>
+      <label class="checkbox-label"><input type="checkbox" name="reds_recup"> Récupération lente</label>
+      <label class="checkbox-label ${isFemale()?'':'hidden'}" id="reds-menstruel"><input type="checkbox" name="reds_menstruel"> Perturbations menstruelles</label>
+      <label class="checkbox-label" id="reds-croissance"><input type="checkbox" name="reds_croissance"> Ralentissement de croissance</label>
+    </div>
+    <div id="reds-alert" class="alert-box hidden mt-2">⚠️ Plusieurs signaux RED-S détectés. Consultez un professionnel de santé.</div>
+  `});
+
+  // Step 15: Écrans
+  EVALUATION_SECTIONS.push({ title: '📱 Écrans', id: 'ecrans', html: `
+    <div class="form-group"><label>Temps d'écran récréatif moyen par jour (heures)</label><input type="number" name="ecran_heures" step="0.1"></div>
+    <div class="form-group"><label>Utilisation au coucher</label><select name="ecran_coucher"><option value="Aucune">Aucune utilisation au lit</option><option value="Avant lit">Écran avant le coucher, arrêté avant le lit</option><option value="Dans le lit">Utilisation une fois couché</option></select></div>
+    <div class="form-group"><label><input type="checkbox" name="smartphone_chambre"> Smartphone dans la chambre la nuit</label></div>
+    <div class="form-group"><label>Temps réseaux sociaux avant entraînement</label><select name="ecran_avant_training"><option value="0-10 min">0-10 min</option><option value="10-30 min">10-30 min</option><option value="≥30 min">≥30 min</option></select></div>
+  `});
+
+  // Step 16: Stress & Mental
+  EVALUATION_SECTIONS.push({ title: '🧠 Stress & Mental', id: 'mental', html: `
+    ${buildSlider('stress', 'Niveau de stress (0=aucun, 10=maximal)')}
+    ${buildSlider('gestion_stress', 'Capacité à gérer le stress (0=impossible, 10=excellente)')}
+    ${buildSlider('plaisir', 'Plaisir à pratiquer (0=aucun, 10=énorme)')}
+    ${buildSlider('motivation', 'Motivation (0=aucune, 10=maximale)')}
+    ${buildSlider('concentration', 'Concentration (0=impossible, 10=totale)')}
+    ${buildSlider('confiance', 'Confiance en soi (0=aucune, 10=totale)')}
+    ${buildSlider('fatigue_mentale', 'Fatigue mentale (0=aucune, 10=maximale)')}
+    ${buildSlider('agitation_mentale', 'Agitation mentale (0=aucune, 10=très élevée)')}
+    ${buildSlider('recentrage', 'Capacité à se recentrer (0=impossible, 10=très facile)')}
+  `});
+
+  // Step 17: SAS-2
+  EVALUATION_SECTIONS.push({ title: '🧠 Anxiété en compétition (SAS-2)', id: 'sas2', html: `
+    <div class="info-box">Sport Anxiety Scale-2 — Répondez en pensant à vos sensations habituelles <strong>avant ou pendant les compétitions</strong>.<br>1 = Pas du tout · 2 = Un peu · 3 = Assez · 4 = Beaucoup</div>
+    <h4>Anxiété somatique</h4>
+    ${sas2Q('sas_s1','Mon corps est tendu')}${sas2Q('sas_s2','J\'ai l\'estomac noué')}${sas2Q('sas_s3','Mes muscles sont crispés')}${sas2Q('sas_s4','Mon cœur bat très vite')}${sas2Q('sas_s5','J\'ai les mains moites')}
+    <h4>Inquiétude</h4>
+    ${sas2Q('sas_i1','J\'ai peur de mal faire')}${sas2Q('sas_i2','J\'ai peur de perdre')}${sas2Q('sas_i3','J\'ai peur de décevoir')}${sas2Q('sas_i4','J\'ai peur de ne pas être à la hauteur')}${sas2Q('sas_i5','J\'ai peur de l\'échec')}
+    <h4>Perturbation de la concentration</h4>
+    ${sas2Q('sas_c1','J\'ai du mal à me concentrer')}${sas2Q('sas_c2','Je pense à autre chose')}${sas2Q('sas_c3','Je perds ma concentration')}${sas2Q('sas_c4','J\'ai du mal à rester focalisé')}${sas2Q('sas_c5','Mon esprit s\'évade')}
+  `});
+
+  // Step 18: École / Travail
+  EVALUATION_SECTIONS.push({ title: '📚 École / Travail', id: 'ecole', html: `
+    <div class="form-group"><label>Type</label><select name="ecole_type"><option value="Scolaire">Scolaire</option><option value="Professionnel">Professionnel</option></select></div>
+    <div class="form-group"><label>Charge (0=normale, 3=examens/période critique)</label><select name="ecole_charge"><option value="0">0 — Période normale</option><option value="1">1 — Quelques évaluations</option><option value="2">2 — Semaine très chargée</option><option value="3">3 — Examens / période critique</option></select></div>
+    ${buildSlider('ecole_resultats', 'Résultats scolaires / professionnels')}
+    ${buildSlider('ecole_fatigue', 'Fatigue liée à l\'école / au travail')}
+    <div class="form-group"><label><input type="checkbox" name="ecole_examens"> Période d'examens en cours</label></div>
+  `});
+
+  // Step 19: Blessures
+  EVALUATION_SECTIONS.push({ title: '🦵 Blessures', id: 'blessures', html: `
+    <div class="form-row">
+      <div class="form-group"><label>Nombre de blessures ce trimestre</label><input type="number" name="blessures_nombre" min="0"></div>
+      <div class="form-group"><label>Jours sans entraînement</label><input type="number" name="blessures_jours" min="0"></div>
+    </div>
+    <div class="form-group"><label>Zones douloureuses</label>
+      <div class="checkbox-group">
+        <label class="checkbox-label"><input type="checkbox" name="zone_genou"> Genou</label>
+        <label class="checkbox-label"><input type="checkbox" name="zone_epaule"> Épaule</label>
+        <label class="checkbox-label"><input type="checkbox" name="zone_doigts"> Doigts</label>
+        <label class="checkbox-label"><input type="checkbox" name="zone_cheville"> Cheville</label>
+        <label class="checkbox-label"><input type="checkbox" name="zone_dos"> Dos</label>
+        <label class="checkbox-label"><input type="checkbox" name="zone_hanche"> Hanche</label>
+        <label class="checkbox-label"><input type="checkbox" name="zone_autre"> Autre</label>
+      </div>
+    </div>
+    ${buildSlider('douleur_niveau', 'Niveau de douleur (0=aucune, 10=insupportable)')}
+    <div class="form-group"><label><input type="checkbox" name="douleurs_persistantes"> Douleurs persistantes</label></div>
+    <div class="form-group"><label><input type="checkbox" name="recidive"> Récidive</label></div>
+    <div class="form-group"><label><input type="checkbox" name="consultation_med"> Consultation médicale / kiné</label></div>
+    <div class="form-group"><label><input type="checkbox" name="gonflement"> Gonflement / instabilité / perte fonctionnelle</label></div>
+  `});
+
+  // Step 20: Technique
+  const techDomains = ['Ukemi','Déplacements','Posture','Kumikata','Kuzushi','Tsukuri','Kake','Nage-waza','Ashi-waza','Koshi-waza','Te-waza','Sutemi-waza','Enchaînements','Combinaisons','Contres','Ne-waza','Osaekomi','Retournements','Sorties immobilisation','Shime-waza','Kansetsu-waza','Transition tachi-ne'];
+  const tokui = ['Qualité entrée','Vitesse','Kuzushi','Réussite opposition','Deux côtés','Enchaînements','Si bloqué','Transition sol'];
+  let techHtml = '<div class="info-box">0=inconnu · 1=statique · 2=déplacement/uchi-komi · 3=randori · 4=compétition</div><div class="table-wrap"><table><thead><tr><th>Domaine</th><th>Niveau</th></tr></thead><tbody>';
+  techDomains.forEach(d => {
+    const n = 'tech_' + d.toLowerCase().replace(/[\s\-\/]/g,'_');
+    techHtml += `<tr><td>${d}</td><td><select name="${n}" class="select-score" aria-label="${d}"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option></select></td></tr>`;
+  });
+  techHtml += '</tbody></table></div><h4>Tokui-waza — Évaluation détaillée</h4><div class="table-wrap"><table><thead><tr><th>Critère</th><th>Niveau</th></tr></thead><tbody>';
+  tokui.forEach(t => {
+    const n = 'tokui_' + t.toLowerCase().replace(/[\s\-\/]/g,'_');
+    techHtml += `<tr><td>${t}</td><td><select name="${n}" class="select-score" aria-label="Tokui-waza : ${t}"><option value="">—</option><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option></select></td></tr>`;
+  });
+  techHtml += '</tbody></table></div>';
+  EVALUATION_SECTIONS.push({ title: '🥋 Technique', id: 'technique', html: techHtml });
+
+  // Step 21: Compétitions
+  EVALUATION_SECTIONS.push({ title: '🏆 Compétitions trimestre', id: 'competitions', html: `
+    <div class="form-row">
+      <div class="form-group"><label>Nombre de combats</label><input type="number" name="comp_combats" min="0"></div>
+      <div class="form-group"><label>Victoires</label><input type="number" name="comp_victoires" min="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Défaites</label><input type="number" name="comp_defaites" min="0"></div>
+      <div class="form-group"><label>Waza-ari</label><input type="number" name="comp_wazaari" min="0"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Ippon</label><input type="number" name="comp_ippon" min="0"></div>
+      <div class="form-group"><label>Shido reçus</label><input type="number" name="comp_shido_recus" min="0"></div>
+    </div>
+    <div class="form-group"><label>Shido provoqués</label><input type="number" name="comp_shido_provoques" min="0"></div>
+    <div class="form-group"><label>Techniques utilisées</label><input type="text" name="comp_techniques" placeholder="uchi-mata, ko-uchi-gari"></div>
+    <div class="form-group"><label>Temps moyen avant 1ère attaque (s)</label><input type="number" name="comp_temps_1ere_attaque"></div>
+    <div class="form-group"><label>Principales causes de victoire</label><textarea name="comp_causes_victoires" rows="2"></textarea></div>
+    <div class="form-group"><label>Principales causes de défaite</label><textarea name="comp_causes_defaites" rows="2"></textarea></div>
+  `});
+
+  // Step 22: Objectifs & Difficultés
+  EVALUATION_SECTIONS.push({ title: '🎯 Objectifs & Difficultés', id: 'objectifs', html: `
+    <h4>Objectifs (2-3 priorités par trimestre)</h4>
+    <div class="info-box">Statut : 0=pas commencé · 1=en acquisition · 2=maîtrisé entraînement · 3=transféré compétition</div>
+    <div id="obj-list"></div>
+    <button class="btn-sm" onclick="addObjective()">+ Ajouter un objectif</button>
+    <hr>
+    <h4>Difficultés rencontrées</h4>
+    <div id="diff-list"></div>
+    <button class="btn-sm" onclick="addDifficulty()">+ Ajouter une difficulté</button>
+  `});
+
+  // Step 23: Summary
+  EVALUATION_SECTIONS.push({ title: '✅ Résumé', id: 'summary', html: `
+    <div class="info-box">Voici le résumé de votre évaluation avec les indicateurs par domaine.</div>
+    <div id="eval-summary"></div>
+
+  `});
+}
+
+function sas2Q(name, question) {
+  return `<div class="form-group"><label>${question}</label><select name="${name}"><option value="">Choisir…</option><option value="1">Pas du tout</option><option value="2">Un peu</option><option value="3">Assez</option><option value="4">Beaucoup</option></select></div>`;
+}
+
+function calcSJFT() {
+  const p = getVal('sjft_projections'), f = getVal('sjft_fc_fin'), m = getVal('sjft_fc_1min');
+  const el = document.getElementById('sjft-index');
+  if (p > 0 && f > 0 && m > 0) { el.textContent = ((f + m) / p).toFixed(2); }
+  else el.textContent = '—';
+}
+
+function calcLoss() {
+  const f = getVal('anaero_first'), l = getVal('anaero_last');
+  const el = document.getElementById('loss-pct');
+  if (document.querySelector('[name="anaero_last"]').value === '') { el.textContent = '—'; return; }
+  if (f > 0 && l >= 0) { const loss = ((f - l) / f * 100).toFixed(1); el.textContent = loss + '%'; el.className = loss < 5 ? 'text-green' : loss < 10 ? 'text-orange' : 'text-red'; }
+  else el.textContent = '—';
+}
+
+function getVal(name) { const el = document.querySelector(`[name="${name}"]`); return el ? parseFloat(el.value) || 0 : 0; }
+
+const EVALUATION_GROUPS = [
+  { id: 'profil', title: 'Mon profil', sections: ['profil'] },
+  { id: 'quotidien', title: 'Mon quotidien', sections: ['sommeil','mental','ecrans','ecole'] },
+  { id: 'sante', title: 'Ma santé', sections: ['blessures','nutrition','croissance','reds'] },
+  { id: 'judo', title: 'Mon judo', sections: ['objectifs','attaque','technique','competitions','sas2'] },
+  { id: 'tests', title: 'Mes tests physiques', description: 'À compléter avec tes mesures et ton entraîneur. Tu peux laisser un test vide.', sections: ['mobilite','souplesse','force','explosivite','explo_judo','aerobie','sjft','anaerobie'] },
+  { id: 'bilan', title: 'Mon résumé', sections: ['summary'] }
+];
+
+function renderEvaluation() {
+  defineEvaluationSections();
+  const container = document.getElementById('evaluation-sections');
+  document.getElementById('evaluation-nav').innerHTML = EVALUATION_GROUPS.map(g => `<a href="#eval-group-${g.id}">${g.title.replace(/^Mon |^Ma |^Mes /,'')}</a>`).join('');
+  container.innerHTML = EVALUATION_GROUPS.map(g => `<section aria-labelledby="eval-group-${g.id}">
+    <h2 class="${g.id === 'profil' ? 'sr-only' : 'section-heading'}" id="eval-group-${g.id}">${g.title}</h2>
+    ${g.description ? `<p class="section-description">${g.description}</p>` : ''}
+    ${g.sections.map(id => {
+      const section = EVALUATION_SECTIONS.find(s => s.id === id);
+      return `<section class="card evaluation-section" id="eval-${id}" aria-labelledby="eval-title-${id}"><h3 id="eval-title-${id}">${section.title}</h3>${section.html}</section>`;
+    }).join('')}
+  </section>`).join('');
+  // An unanswered choice must not silently count as the first answer.
+  container.querySelectorAll('select[name]').forEach(el => {
+    if (!el.querySelector('option[value=""]')) el.prepend(new Option('Choisir…', '', true, true));
+  });
+  initSliders(container);
+  prefillFromProfile();
+  enhanceFormControls(container);
+  updateEvaluationContext();
+}
+
+function updateEvaluationContext() {
+  const dob = document.querySelector('[name="date_naissance"]').value;
+  const sex = document.querySelector('[name="sexe"]').value;
+  const age = getAge(dob);
+  const adolescent = age !== null && age >= 0 && age < 18;
+  const growth = document.getElementById('eval-croissance');
+  growth.classList.toggle('hidden', !adolescent);
+  growth.querySelectorAll('input').forEach(el => el.disabled = !adolescent);
+  [['reds-menstruel', sex === 'Femme'], ['reds-croissance', adolescent]].forEach(([id, applicable]) => {
+    const label = document.getElementById(id);
+    label.classList.toggle('hidden', !applicable);
+    label.querySelector('input').disabled = !applicable;
+  });
+  buildSummary();
+}
+
+function enhanceFormControls(container = document) {
+  container.querySelectorAll('input, select, textarea').forEach((el, i) => {
+    if (!el.id) el.id = el.name ? 'field-' + el.name : 'field-' + container.id + '-' + i;
+    const group = el.closest('.form-group');
+    const label = group?.querySelector('label');
+    if (label && !label.querySelector('input,select,textarea')) label.htmlFor = el.id;
+    if (el.name === 'date_naissance') el.max = localDate();
+    if (el.type === 'number') el.inputMode = el.step && el.step !== '1' ? 'decimal' : 'numeric';
+    if (el.name === 'prenom') el.autocomplete = 'given-name';
+  });
+  container.querySelectorAll('button').forEach(button => button.type = 'button');
+}
+
+function collectAllFormData() {
+  const form = document.getElementById('eval-form');
+  const data = {};
+  form.querySelectorAll('input, select, textarea').forEach(el => {
+    if (!el.name || el.disabled) return;
+    if (el.type === 'range' && el.dataset.answered !== 'true') return;
+    data[el.name] = el.type === 'checkbox' ? el.checked : el.value;
+  });
+  return data;
+}
+
+// ============================================================
+// OBJECTIVES & DIFFICULTIES (dynamic)
+// ============================================================
+let tempObjectives = [];
+let tempDifficulties = [];
+
+function addObjective() {
+  tempObjectives.push({ type: '', description: '', statut: 0, commentaire: '' });
+  renderObjectivesForm();
+}
+function removeObjective(i) { tempObjectives.splice(i, 1); renderObjectivesForm(); }
+function renderObjectivesForm() {
+  const c = document.getElementById('obj-list');
+  if (!c) return;
+  c.innerHTML = tempObjectives.map((o, i) => `<div class="card" style="padding:.5rem;margin-bottom:.5rem">
+    <div class="form-row"><div class="form-group"><label>Type</label><select oninput="tempObjectives[${i}].type=this.value"><option value="">—</option><option ${o.type==='Technique'?'selected':''}>Technique</option><option ${o.type==='Tactique'?'selected':''}>Tactique</option><option ${o.type==='Physique'?'selected':''}>Physique</option><option ${o.type==='Cardio'?'selected':''}>Cardio</option><option ${o.type==='Mental'?'selected':''}>Mental</option><option ${o.type==='Grade'?'selected':''}>Grade</option><option ${o.type==='Scolaire'?'selected':''}>Scolaire</option><option ${o.type==='Santé'?'selected':''}>Santé</option><option ${o.type==='Résultat'?'selected':''}>Résultat</option></select></div>
+    <div class="form-group"><label>Statut (0-3)</label><select oninput="tempObjectives[${i}].statut=+this.value"><option value="0" ${o.statut==0?'selected':''}>0</option><option value="1" ${o.statut==1?'selected':''}>1</option><option value="2" ${o.statut==2?'selected':''}>2</option><option value="3" ${o.statut==3?'selected':''}>3</option></select></div></div>
+    <div class="form-group"><label>Description</label><input type="text" value="${escapeHTML(o.description)}" oninput="tempObjectives[${i}].description=this.value"></div>
+    <button class="btn-sm btn-danger" onclick="removeObjective(${i})">Supprimer</button>
+  </div>`).join('');
+  enhanceFormControls(c);
+  buildSummary();
+  scheduleDraft();
+}
+
+function addDifficulty() {
+  tempDifficulties.push({ domaine: '', description: '', actions: '' });
+  renderDifficultiesForm();
+}
+function removeDifficulty(i) { tempDifficulties.splice(i, 1); renderDifficultiesForm(); }
+function renderDifficultiesForm() {
+  const c = document.getElementById('diff-list');
+  if (!c) return;
+  c.innerHTML = tempDifficulties.map((d, i) => `<div class="card" style="padding:.5rem;margin-bottom:.5rem">
+    <div class="form-group"><label>Domaine</label><input type="text" value="${escapeHTML(d.domaine)}" oninput="tempDifficulties[${i}].domaine=this.value" placeholder="Mental, Physique, Technique..."></div>
+    <div class="form-group"><label>Description</label><input type="text" value="${escapeHTML(d.description)}" oninput="tempDifficulties[${i}].description=this.value"></div>
+    <div class="form-group"><label>Actions prévues</label><input type="text" value="${escapeHTML(d.actions)}" oninput="tempDifficulties[${i}].actions=this.value"></div>
+    <button class="btn-sm btn-danger" onclick="removeDifficulty(${i})">Supprimer</button>
+  </div>`).join('');
+  enhanceFormControls(c);
+  buildSummary();
+  scheduleDraft();
+}
+
+function prefillFromProfile() {
+  if (!hasProfile) return;
+  const p = D.profil, a = D.attaque;
+  const fields = { prenom: p.prenom, date_naissance: p.date_naissance, sexe: p.sexe, club: p.club, grade: p.grade, categorie_poids: p.categorie_poids, entrainements_semaine: p.entrainements_semaine, lateralite: p.lateralite, annee_debut_judo: p.annee_debut_judo };
+  Object.entries(fields).forEach(([k, v]) => { const el = document.querySelector(`[name="${k}"]`); if (el && v !== undefined && v !== null) el.value = v; });
+  const af = { tokui_waza: a.tokui_waza, attaques_secondaires: a.attaques_secondaires, enchainements: a.enchainements, contres: a.contres, garde_preferee: a.garde_preferee, newaza_immobilisations: a.newaza_immobilisations, newaza_retournements: a.newaza_retournements, transitions: a.transitions, vs_gaucher: a.vs_gaucher };
+  Object.entries(af).forEach(([k, v]) => { const el = document.querySelector(`[name="${k}"]`); if (el && v !== undefined && v !== null) el.value = v; });
+  tempObjectives = JSON.parse(JSON.stringify(D.objectifs || []));
+  tempDifficulties = JSON.parse(JSON.stringify(D.difficultes || []));
+  renderObjectivesForm();
+  renderDifficultiesForm();
+}
+
+// ============================================================
+// BUILD SUMMARY
+// ============================================================
+function buildSummary() {
+  const data = collectAllFormData();
+  const axes = computeAxes(data);
+  const el = document.getElementById('eval-summary');
+  el.innerHTML = '<div class="axis-grid">' + axes.map(a => `<div class="axis-card"><div class="axis-dot ${a.color}"></div><span class="axis-label">${a.icon} ${a.label}</span><span class="badge badge-${a.color}" style="margin-left:auto">${a.status}</span></div>`).join('') + '</div>';
+}
+
+function computeAxes(data) {
+  const birth = document.querySelector('[name="date_naissance"]')?.value || D.profil.date_naissance;
+  const age = getAge(birth);
+  const ado = age !== null && age >= 0 && age < 18;
+  const axes = [];
+  // Croissance
+  if (ado) {
+    const d = parseFloat(data.douleurs_croissance) || 0;
+    axes.push({ icon: '🧬', label: 'Croissance', ...threshold(d, [[0,2,'green','OK'],[3,4,'orange','Vigilance'],[5,10,'red','Alerte']]) });
+  }
+  // Sommeil
+  const sd = parseFloat(data.sommeil_duree) || 0;
+  const sq = parseFloat(data.sommeil_qualite) || 0;
+  const sleepMin = ado ? 8 : 7;
+  let sleepC = sd >= sleepMin ? 'green' : sd >= sleepMin - 1 ? 'orange' : 'red';
+  let qualC = sq >= 7 ? 'green' : sq >= 4 ? 'orange' : 'red';
+  axes.push({ icon: '😴', label: 'Sommeil', color: worst(sleepC, qualC), status: `${sd||'?'}h / qualité ${sq}/10` });
+  // Mobilité
+  const doulMob = data.douleur_mobilite;
+  axes.push({ icon: '🤸', label: 'Mobilité', color: doulMob ? 'red' : 'green', status: doulMob ? 'Douleur!' : 'OK' });
+  // Souplesse
+  axes.push({ icon: '🧘', label: 'Souplesse', color: 'gray', status: 'Suivi' });
+  // Force
+  axes.push({ icon: '💪', label: 'Force', color: 'gray', status: 'Suivi' });
+  // Préhension
+  const gd = parseFloat(data.grip_d) || 0, gg = parseFloat(data.grip_g) || 0;
+  const asymGrip = gd && gg ? Math.abs(gd - gg) / Math.max(gd, gg) * 100 : 0;
+  axes.push({ icon: '✊', label: 'Préhension', color: asymGrip > 20 ? 'orange' : 'green', status: `D:${gd} G:${gg}kg` });
+  // Explosivité
+  axes.push({ icon: '💥', label: 'Explosivité', color: 'gray', status: 'Suivi' });
+  // Aérobie
+  axes.push({ icon: '❤️', label: 'Aérobie', color: 'gray', status: 'Suivi' });
+  // Anaérobie
+  const loss = data.anaero_first > 0 ? ((data.anaero_first - data.anaero_last) / data.anaero_first * 100) : 0;
+  axes.push({ icon: '❤️‍🔥', label: 'Anaérobie', ...threshold(loss, [[0,5,'green','<5%'],[5,10,'orange','5-10%'],[10,100,'red','>10%']]) });
+  // SJFT
+  const sjft = data.sjft_projections > 0 ? ((parseFloat(data.sjft_fc_fin) + parseFloat(data.sjft_fc_1min)) / parseFloat(data.sjft_projections)).toFixed(2) : null;
+  axes.push({ icon: '🥋', label: 'SJFT', color: sjft ? 'gray' : 'gray', status: sjft ? `Index: ${sjft}` : '—' });
+  // Nutrition
+  const restrict = data.restriction_poids;
+  axes.push({ icon: '🥗', label: 'Nutrition', color: restrict ? 'red' : data.repas_regularite === 'Irrégulier' ? 'red' : data.repas_regularite === 'Occasionnel' ? 'orange' : 'green', status: restrict ? '⚠️ Restriction!' : fmt(data.repas_regularite) });
+  // Écrans
+  const ecH = parseFloat(data.ecran_heures) || 0;
+  axes.push({ icon: '📱', label: 'Écrans', ...threshold(ecH, [[0,2,'green','≤2h'],[2,4,'orange','2-4h'],[4,24,'red','>4h']]) });
+  // Stress
+  const fm = parseFloat(data.fatigue_mentale) || 0;
+  axes.push({ icon: '🧠', label: 'Stress/Anxiété', ...threshold(fm, [[0,3,'green','OK'],[4,6,'orange','Vigilance'],[7,10,'red','Alerte']]) });
+  // Concentration
+  const conc = parseFloat(data.concentration) || 0, conf = parseFloat(data.confiance) || 0;
+  const cc = Math.min(conc, conf);
+  axes.push({ icon: '🎯', label: 'Concentration/Confiance', ...threshold(10 - cc, [[0,3,'green','OK'],[4,6,'orange','Vigilance'],[7,10,'red','Alerte']]) });
+  // École
+  const ec = parseInt(data.ecole_charge) || 0;
+  axes.push({ icon: '📚', label: 'École/Travail', ...threshold(ec, [[0,1,'green','OK'],[2,2,'orange','Chargée'],[3,3,'red','Critique']]) });
+  // Blessures
+  const dl = parseFloat(data.douleur_niveau) || 0;
+  const gonf = data.gonflement;
+  axes.push({ icon: '🦵', label: 'Blessures', color: gonf ? 'red' : dl >= 5 ? 'red' : dl >= 3 ? 'orange' : 'green', status: gonf ? '⚠️ Gonflement!' : `Douleur: ${dl}/10` });
+  // Technique
+  axes.push({ icon: '🥋', label: 'Technique', color: 'gray', status: 'Suivi' });
+  // Objectifs
+  axes.push({ icon: '🎯', label: 'Objectifs', color: tempObjectives.length > 0 ? 'green' : 'orange', status: `${tempObjectives.length} objectif(s)` });
+  const required = {
+    'Croissance':['douleurs_croissance'], 'Sommeil':['sommeil_duree','sommeil_qualite'],
+    'Mobilité':['ktw_d','ktw_g'], 'Préhension':['grip_d','grip_g'],
+    'Anaérobie':['anaero_first','anaero_last'], 'SJFT':['sjft_projections','sjft_fc_fin','sjft_fc_1min'],
+    'Nutrition':['repas_regularite'], 'Écrans':['ecran_heures'], 'Stress/Anxiété':['fatigue_mentale'],
+    'Concentration/Confiance':['concentration','confiance'], 'École/Travail':['ecole_charge'], 'Blessures':['douleur_niveau']
+  };
+  axes.forEach(axis => {
+    if (required[axis.label]?.some(k => data[k] === undefined || data[k] === '' || data[k] === null)) {
+      axis.color = 'gray'; axis.status = 'À renseigner';
+    }
+    // An explicitly reported signal takes precedence over missing measurements.
+    if (axis.label === 'Mobilité' && data.douleur_mobilite) { axis.color = 'red'; axis.status = 'Douleur signalée'; }
+    if (axis.label === 'Nutrition' && data.restriction_poids) { axis.color = 'red'; axis.status = 'Restriction signalée'; }
+    if (axis.label === 'Blessures' && data.gonflement) { axis.color = 'red'; axis.status = 'Gonflement signalé'; }
+  });
+  return axes;
+}
+
+function threshold(v, ranges) {
+  for (const [min, max, color, status] of ranges) { if (v >= min && v <= max) return { color, status }; }
+  return { color: 'gray', status: '—' };
+}
+function worst(a, b) { const order = ['red','orange','green','gray']; return order[Math.min(order.indexOf(a), order.indexOf(b))]; }
+
+// ============================================================
+// FINISH EVALUATION
+// ============================================================
+function finishEval() {
+  if (!document.getElementById('eval-form').reportValidity()) return;
+  const data = collectAllFormData();
+  // Save profile info
+  ['prenom','date_naissance','sexe','club','grade','categorie_poids','entrainements_semaine','lateralite','annee_debut_judo'].forEach(k => { if (data[k]) D.profil[k] = data[k]; });
+  ['tokui_waza','attaques_secondaires','enchainements','contres','garde_preferee','newaza_immobilisations','newaza_retournements','transitions','vs_gaucher'].forEach(k => { if (data[k]) D.attaque[k] = data[k]; });
+  // Save evaluation
+  const ev = { date: new Date().toISOString().split('T')[0], trimestre: getTrimestreName() };
+  Object.entries(data).forEach(([k, v]) => {
+    if (!['prenom','date_naissance','sexe','club','grade','categorie_poids','entrainements_semaine','lateralite','annee_debut_judo','tokui_waza','attaques_secondaires','enchainements','contres','garde_preferee','newaza_immobilisations','newaza_retournements','transitions','vs_gaucher'].includes(k)) {
+      ev[k] = v;
+    }
+  });
+  // SJFT index
+  if (ev.sjft_projections > 0 && ev.sjft_fc_fin > 0 && ev.sjft_fc_1min > 0) {
+    ev.sjft_index = ((parseFloat(ev.sjft_fc_fin) + parseFloat(ev.sjft_fc_1min)) / parseFloat(ev.sjft_projections)).toFixed(2);
+  }
+  D.evaluations.push(ev);
+  D.objectifs = tempObjectives;
+  D.difficultes = tempDifficulties;
+  hasProfile = true;
+  document.getElementById('btn-export').disabled = false;
+  saveDraft();
+  toast('Évaluation ajoutée à ton profil. Pense à exporter le fichier.');
+  switchTab('dashboard', document.querySelectorAll('.tab-btn')[0]);
+}
+
+function getTrimestreName() {
+  const m = new Date().getMonth();
+  if (m >= 8 && m <= 10) return 'Septembre ' + new Date().getFullYear();
+  if (m >= 11 || m <= 1) return 'Décembre ' + new Date().getFullYear();
+  if (m >= 2 && m <= 4) return 'Mars ' + new Date().getFullYear();
+  return 'Juin ' + new Date().getFullYear();
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashboard() {
+  if (!hasProfile) {
+    document.getElementById('welcome-screen').classList.remove('hidden');
+    document.getElementById('dashboard-content').classList.add('hidden');
+    return;
+  }
+  document.getElementById('welcome-screen').classList.add('hidden');
+  document.getElementById('dashboard-content').classList.remove('hidden');
+  // Profile card
+  const p = D.profil, a = D.attaque;
+  const age = getAge(p.date_naissance);
+  document.getElementById('profile-card').innerHTML = `<div class="flex-between"><div><h3>${p.prenom || '—'}</h3><p class="text-muted">${p.club || ''} · ${p.grade || ''} · ${p.categorie_poids || ''}</p><p class="text-muted">${age ? age + ' ans' : ''} · ${p.sexe || ''} · ${p.lateralite || ''}</p></div><div style="text-align:right"><p class="text-gold">${(a.tokui_waza || '—')}</p><p class="text-muted" style="font-size:.8rem">${(a.enchainements || '')}</p></div></div>`;
+  // Radar chart
+  drawRadar();
+  // Alerts
+  renderAlerts();
+  // Evolution table
+  renderEvolution();
+  // Plan timeline
+  renderPlanTimeline();
+  // Objectives
+  renderObjectivesDisplay();
+  // Events
+  renderEventsDisplay();
+}
+
+function drawRadar() {
+  const canvas = document.getElementById('radarChart');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height, cx = W/2, cy = H/2, R = Math.min(W,H)/2 - 40;
+  ctx.clearRect(0,0,W,H);
+  if (D.evaluations.length === 0) { ctx.fillStyle = '#9aa0a6'; ctx.textAlign = 'center'; ctx.fillText('Effectuez une évaluation pour voir le radar', cx, cy); return; }
+  const last = D.evaluations[D.evaluations.length - 1];
+  const labels = ['Sommeil','Mobilité','Force','Préhension','Explosivité','Aérobie','Anaérobie','SJFT','Nutrition','Écrans','Stress','Confiance','École','Blessures','Technique'];
+  const n = labels.length;
+  // Draw grid
+  ctx.strokeStyle = '#2d3748'; ctx.lineWidth = 1;
+  for (let r = 1; r <= 4; r++) {
+    ctx.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const angle = (Math.PI * 2 / n) * i - Math.PI / 2;
+      const x = cx + Math.cos(angle) * R * r / 4;
+      const y = cy + Math.sin(angle) * R * r / 4;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+  // Draw labels
+  ctx.fillStyle = '#9aa0a6'; ctx.font = '10px Inter, sans-serif'; ctx.textAlign = 'center';
+  labels.forEach((l, i) => {
+    const angle = (Math.PI * 2 / n) * i - Math.PI / 2;
+    const x = cx + Math.cos(angle) * (R + 25);
+    const y = cy + Math.sin(angle) * (R + 25);
+    ctx.fillText(l, x, y + 3);
+  });
+  // Draw data
+  const values = labels.map(l => {
+    if (l === 'Sommeil') return normalize(last.sommeil_qualite, 10);
+    if (l === 'Force') return normalize(last.qualite_tech_force, 3);
+    if (l === 'Préhension') return Math.min((parseFloat(last.grip_d || 0) + parseFloat(last.grip_g || 0)) / 80, 1);
+    if (l === 'Explosivité') return normalize(last.cmj, 60);
+    if (l === 'Stress') return 1 - normalize(last.fatigue_mentale, 10);
+    if (l === 'Confiance') return normalize(last.confiance, 10);
+    if (l === 'Écrans') return 1 - Math.min(parseFloat(last.ecran_heures || 0) / 6, 1);
+    if (l === 'Nutrition') return last.restriction_poids ? 0.2 : last.repas_regularite === 'Régulier' ? 1 : 0.5;
+    if (l === 'Blessures') return 1 - normalize(last.douleur_niveau, 10);
+    if (l === 'École') return 1 - normalize(last.ecole_charge, 3);
+    return 0.5;
+  });
+  ctx.beginPath(); ctx.fillStyle = 'rgba(201,168,76,0.2)'; ctx.strokeStyle = 'var(--gold)'; ctx.lineWidth = 2;
+  values.forEach((v, i) => {
+    const angle = (Math.PI * 2 / n) * i - Math.PI / 2;
+    const x = cx + Math.cos(angle) * R * v;
+    const y = cy + Math.sin(angle) * R * v;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+  // Dots
+  values.forEach((v, i) => {
+    const angle = (Math.PI * 2 / n) * i - Math.PI / 2;
+    const x = cx + Math.cos(angle) * R * v;
+    const y = cy + Math.sin(angle) * R * v;
+    ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = v >= 0.7 ? '#34d399' : v >= 0.4 ? '#f59e0b' : '#ef4444';
+    ctx.fill();
+  });
+}
+function normalize(v, max) { return Math.min(Math.max(parseFloat(v || 0) / max, 0), 1); }
+
+function renderAlerts() {
+  const c = document.getElementById('alerts-container');
+  if (D.evaluations.length === 0) { c.innerHTML = ''; return; }
+  const last = D.evaluations[D.evaluations.length - 1];
+  const alerts = [];
+  const sd = parseFloat(last.sommeil_duree) || 0;
+  if (sd > 0 && sd < (isAdolescent() ? 8 : 7)) alerts.push({ icon: '😴', msg: `Sommeil insuffisant (${sd}h)`, tip: isAdolescent() ? 'Recommandé : 8-10h pour un adolescent' : 'Recommandé : 7-9h pour un adulte' });
+  if (parseFloat(last.ecran_heures) > 4) alerts.push({ icon: '📱', msg: `Temps d'écran élevé (${last.ecran_heures}h/jour)`, tip: 'Objectif : ≤2h de temps récréatif' });
+  if (last.restriction_poids) alerts.push({ icon: '🥗', msg: 'Restriction alimentaire pour le poids !', tip: 'Dangereux chez l\'adolescent. Consultez un professionnel.' });
+  if (last.gonflement) alerts.push({ icon: '🦵', msg: 'Gonflement / instabilité signalé', tip: 'Consultation médicale recommandée.' });
+  if (parseFloat(last.fatigue_mentale) >= 7) alerts.push({ icon: '🧠', msg: `Fatigue mentale élevée (${last.fatigue_mentale}/10)`, tip: 'Peut augmenter la difficulté perçue d\'un entraînement.' });
+  c.innerHTML = alerts.length > 0 ? '<div class="card"><h3>🔴 Alertes</h3>' + alerts.map(a => `<div class="alert-box">${a.icon} <strong>${a.msg}</strong><br><span style="font-size:.8rem;color:var(--muted)">${a.tip}</span></div>`).join('') + '</div>' : '';
+}
+
+function renderEvolution() {
+  const c = document.getElementById('evolution-table');
+  if (D.evaluations.length < 1) { c.innerHTML = '<p class="text-muted">Effectuez au moins une évaluation.</p>'; return; }
+  const keys = [['Sommeil (h)', 'sommeil_duree'], ['Qualité sommeil', 'sommeil_qualite'], ['CMJ (cm)', 'cmj'], ['Sprint 10m', 'sprint_10m'], ['SJFT index', 'sjft_index'], ['Stress', 'stress'], ['Confiance', 'confiance'], ['Écrans (h)', 'ecran_heures'], ['Douleur', 'douleur_niveau']];
+  let html = '<table><thead><tr><th>Indicateur</th>';
+  D.evaluations.forEach(e => html += `<th>${e.trimestre || e.date}</th>`);
+  html += '</tr></thead><tbody>';
+  keys.forEach(([label, key]) => {
+    html += `<tr><td>${label}</td>`;
+    D.evaluations.forEach(e => html += `<td>${fmt(e[key])}</td>`);
+    html += '</tr>';
+  });
+  html += '</tbody></table>';
+  c.innerHTML = html;
+}
+
+function renderPlanTimeline() {
+  const c = document.getElementById('plan-timeline');
+  const today = new Date().toISOString().split('T')[0];
+  if (!D.plan.echeances || D.plan.echeances.length === 0) { c.innerHTML = '<p class="text-muted">Aucune échéance dans le plan.</p>'; return; }
+  const sorted = [...D.plan.echeances].sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+  let todayInserted = false;
+  c.innerHTML = '<div class="timeline">' + sorted.map(e => {
+    let extra = '';
+    if (!todayInserted && e.date >= today) { extra = `<div class="timeline-item today"><div class="timeline-date">Aujourd'hui — ${today}</div><div class="timeline-title text-green">📍 VOUS ÊTES ICI</div></div>`; todayInserted = true; }
+    return extra + `<div class="timeline-item ${escapeHTML(e.type?.toLowerCase() || '')}"><div class="timeline-date">${escapeHTML(e.date || 'Date à préciser')}</div><div class="timeline-title">${escapeHTML(e.nom || 'Échéance à compléter')}</div><div class="text-muted" style="font-size:.8rem">${escapeHTML(e.type || '')} ${e.lieu ? '· ' + escapeHTML(e.lieu) : ''}</div></div>`;
+  }).join('') + '</div>';
+}
+
+function renderObjectivesDisplay() {
+  const c = document.getElementById('objectives-display');
+  if (D.objectifs.length === 0) { c.innerHTML = '<p class="text-muted">Aucun objectif défini.</p>'; return; }
+  c.innerHTML = D.objectifs.map(o => {
+    const pct = (o.statut || 0) / 3 * 100;
+    const labels = ['Pas commencé', 'En acquisition', 'Maîtrisé entraînement', 'Transféré compétition'];
+    return `<div style="margin-bottom:.75rem"><div class="flex-between"><span>${o.description || '—'}</span><span class="badge badge-${pct >= 100 ? 'green' : pct >= 50 ? 'orange' : 'red'}">${labels[o.statut || 0]}</span></div><div style="height:6px;background:var(--border);border-radius:3px;margin-top:.25rem"><div style="height:100%;width:${pct}%;background:var(--gold);border-radius:3px;transition:width .3s"></div></div></div>`;
+  }).join('');
+}
+
+function renderEventsDisplay() {
+  const c = document.getElementById('events-display');
+  if (D.evenements.length === 0) { c.innerHTML = '<p class="text-muted">Aucun événement enregistré.</p>'; return; }
+  c.innerHTML = D.evenements.map(e => `<div class="card" style="padding:.5rem"><div class="flex-between"><span><strong>${e.nom || '—'}</strong></span><span class="text-muted">${e.date || ''}</span></div><p class="text-muted" style="font-size:.8rem">${e.type || ''} ${e.lieu ? '· ' + e.lieu : ''} ${e.classement ? '· ' + e.classement : ''}</p></div>`).join('');
+}
+
+// ============================================================
+// PLAN TAB
+// ============================================================
+function renderPlan() {
+  if (!hasProfile) { document.getElementById('plan-no-profile').classList.remove('hidden'); document.getElementById('plan-content').classList.add('hidden'); return; }
+  document.getElementById('plan-no-profile').classList.add('hidden');
+  document.getElementById('plan-content').classList.remove('hidden');
+  renderPeriods();
+  renderDeadlines();
+  renderLifeEvents();
+  // Fill mental prep
+  const m = D.plan.mental || {};
+  document.getElementById('plan-projet').value = m.projet_personnel || '';
+  document.getElementById('plan-selftalk').value = (m.mots_cles || []).join(', ');
+  document.getElementById('plan-routine-comp').value = (m.routine_pre_competition || []).join('\n');
+  document.getElementById('plan-routine-train').value = (m.routine_pre_entrainement || []).join('\n');
+}
+
+function escapeHTML(value) {
+  return String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+const PLAN_FIELDS = {
+  periodes: [['nom','Nom de la période','text'],['debut','Début','date'],['fin','Fin','date'],['objectifs','Objectifs','text'],['priorites_physiques','Priorités physiques','text'],['priorites_techniques','Priorités judo','text'],['priorites_mentales','Priorités mentales','text']],
+  echeances: [['nom','Nom','text'],['date','Date','date'],['type','Type',['Compétition','Grade','Stage','Scolaire','Autre']],['lieu','Lieu','text'],['categorie','Catégorie','text'],['importance','Importance',['Haute','Moyenne','Basse']]],
+  vie: [['nom','Nom','text'],['type','Type',['Vacances','Examens','Travail','Autre']],['debut','Début','date'],['fin','Fin','date']]
+};
+const PLAN_LISTS = { periodes: 'periods-list', echeances: 'deadlines-list', vie: 'life-events-list' };
+const PLAN_LABELS = { periodes: 'Période', echeances: 'Échéance', vie: 'Disponibilité' };
+
+function renderPlanEntries(collection) {
+  const list = document.getElementById(PLAN_LISTS[collection]);
+  const entries = D.plan[collection] || [];
+  list.innerHTML = entries.length ? entries.map((entry, i) => `<div class="inline-entry">
+    <div class="entry-heading"><strong>${PLAN_LABELS[collection]} ${i + 1}</strong><button type="button" class="btn-sm" onclick="removePlanEntry('${collection}',${i})" aria-label="Supprimer ${PLAN_LABELS[collection].toLowerCase()} ${i + 1}">Supprimer</button></div>
+    <div class="entry-grid">${PLAN_FIELDS[collection].map(([key, label, kind]) => {
+      const id = `plan-${collection}-${i}-${key}`;
+      const value = entry[key] ?? '';
+      const handler = `oninput="D.plan.${collection}[${i}].${key}=this.value"`;
+      let control;
+      if (Array.isArray(kind)) {
+        const options = [...new Set(['',...kind,...(value ? [value] : [])])];
+        control = `<select id="${id}" ${handler}>${options.map(v => `<option value="${escapeHTML(v)}" ${v === value ? 'selected' : ''}>${escapeHTML(v || 'Choisir…')}</option>`).join('')}</select>`;
+      } else {
+        control = `<input id="${id}" type="${kind}" value="${escapeHTML(value)}" ${handler}>`;
+      }
+      return `<div class="form-group ${key === 'nom' ? 'wide' : ''}"><label for="${id}">${label}</label>${control}</div>`;
+    }).join('')}</div></div>`).join('') : '<p class="text-muted">Rien pour le moment. Utilise le bouton + pour ajouter une ligne.</p>';
+}
+function renderPeriods() { renderPlanEntries('periodes'); }
+function renderDeadlines() { renderPlanEntries('echeances'); }
+function renderLifeEvents() { renderPlanEntries('vie'); }
+function addPlanEntry(collection) {
+  if (!D.plan[collection]) D.plan[collection] = [];
+  D.plan[collection].push(Object.fromEntries(PLAN_FIELDS[collection].map(([key]) => [key, ''])));
+  renderPlanEntries(collection);
+  document.getElementById(`plan-${collection}-${D.plan[collection].length - 1}-nom`).focus();
+  scheduleDraft();
+}
+function removePlanEntry(collection, index) {
+  const [removed] = D.plan[collection].splice(index, 1);
+  renderPlanEntries(collection);
+  toast('Élément supprimé.', 'success', () => {
+    D.plan[collection].splice(index, 0, removed);
+    renderPlanEntries(collection);
+    scheduleDraft();
+  });
+  scheduleDraft();
+}
+function addPeriod() { addPlanEntry('periodes'); }
+function addDeadline() { addPlanEntry('echeances'); }
+function addLifeEvent() { addPlanEntry('vie'); }
+
+function syncPlanMental() {
+  D.plan.mental = {
+    ...D.plan.mental,
+    projet_personnel: document.getElementById('plan-projet').value,
+    mots_cles: document.getElementById('plan-selftalk').value.split(',').map(s => s.trim()).filter(Boolean),
+    routine_pre_competition: document.getElementById('plan-routine-comp').value.split('\n').filter(Boolean),
+    routine_pre_entrainement: document.getElementById('plan-routine-train').value.split('\n').filter(Boolean)
+  };
+}
+function savePlanData() {
+  const invalid = [...document.querySelectorAll('#plan-content input')].find(el => !el.checkValidity());
+  if (invalid) { invalid.reportValidity(); return; }
+  for (const collection of ['periodes','vie']) {
+    const badIndex = (D.plan[collection] || []).findIndex(e => e.debut && e.fin && e.fin < e.debut);
+    if (badIndex >= 0) {
+      document.getElementById(`plan-${collection}-${badIndex}-fin`).focus();
+      toast('La fin doit être après le début.', 'error'); return;
+    }
+  }
+  syncPlanMental();
+  saveDraft();
+  toast('Plan enregistré sur cette page. Pense à exporter ton profil.');
+}
+
+// ============================================================
+// ICS / CSV IMPORT
+// ============================================================
+function importICS(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const text = ev.target.result;
+    const events = [];
+    const blocks = text.split('BEGIN:VEVENT');
+    blocks.forEach(block => {
+      if (!block.includes('END:VEVENT')) return;
+      const get = key => { const m = block.match(new RegExp(key + '[^:]*:(.*)')); return m ? m[1].trim() : ''; };
+      let dtstart = get('DTSTART');
+      if (dtstart.length >= 8) dtstart = dtstart.substring(0,4)+'-'+dtstart.substring(4,6)+'-'+dtstart.substring(6,8);
+      events.push({ date: dtstart, type: 'Compétition', nom: get('SUMMARY'), lieu: get('LOCATION') });
+    });
+    if (!D.plan.echeances) D.plan.echeances = [];
+    D.plan.echeances.push(...events);
+    renderDeadlines();
+    scheduleDraft();
+    toast(`📅 ${events.length} événement(s) importé(s) depuis ICS`);
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function importCSV(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const lines = ev.target.result.split('\n').filter(l => l.trim());
+    if (lines.length < 2) { toast('CSV vide', 'error'); return; }
+    const headers = lines[0].split(';').length > 1 ? lines[0].split(';') : lines[0].split(',');
+    const hLower = headers.map(h => h.trim().toLowerCase().replace(/"/g, ''));
+    const dateIdx = hLower.findIndex(h => h.includes('date'));
+    const nomIdx = hLower.findIndex(h => h.includes('nom') || h.includes('titre') || h.includes('intitulé') || h.includes('evenement') || h.includes('événement'));
+    const lieuIdx = hLower.findIndex(h => h.includes('lieu') || h.includes('ville') || h.includes('adresse'));
+    const typeIdx = hLower.findIndex(h => h.includes('type') || h.includes('catégorie') || h.includes('categorie') || h.includes('discipline'));
+    const sep = lines[0].includes(';') ? ';' : ',';
+    const events = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(sep).map(c => c.trim().replace(/"/g, ''));
+      if (cols.length < 2) continue;
+      let date = dateIdx >= 0 ? cols[dateIdx] : cols[0];
+      // Try to parse date formats: DD/MM/YYYY, YYYY-MM-DD, etc.
+      if (date.includes('/')) { const parts = date.split('/'); if (parts[2] && parts[2].length === 4) date = `${parts[2]}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`; }
+      events.push({ date, type: typeIdx >= 0 ? cols[typeIdx] : 'Compétition', nom: nomIdx >= 0 ? cols[nomIdx] : cols[1] || '', lieu: lieuIdx >= 0 ? cols[lieuIdx] : '' });
+    }
+    if (!D.plan.echeances) D.plan.echeances = [];
+    D.plan.echeances.push(...events);
+    renderDeadlines();
+    scheduleDraft();
+    toast(`📄 ${events.length} événement(s) importé(s) depuis CSV`);
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ============================================================
+// EVENT TAB
+// ============================================================
+function renderEventTab() {
+  if (!hasProfile) { document.getElementById('event-no-profile').classList.remove('hidden'); document.getElementById('event-content').classList.add('hidden'); return; }
+  document.getElementById('event-no-profile').classList.add('hidden');
+  document.getElementById('event-content').classList.remove('hidden');
+  // Build sliders for before/during/after
+  const bs = document.getElementById('ev-before-sliders');
+  if (!bs.innerHTML) {
+    bs.innerHTML = [['ev_b_stress','Stress'],['ev_b_confiance','Confiance'],['ev_b_motivation','Motivation'],['ev_b_fatigue_phys','Fatigue physique'],['ev_b_fatigue_ment','Fatigue mentale']].map(([n,l]) => buildSlider(n, l)).join('') + '<div class="form-group"><label>Sommeil la veille (heures)</label><input type="number" id="ev-sommeil-veille" step="0.1"></div>';
+    initSliders(bs);
+  }
+  const ds = document.getElementById('ev-during-sliders');
+  if (!ds.innerHTML) {
+    ds.innerHTML = [['ev_d_concentration','Concentration'],['ev_d_combativite','Combativité'],['ev_d_tactique','Respect de mon plan de combat'],['ev_d_emotions','Gestion de mes émotions']].map(([n,l]) => buildSlider(n, l)).join('');
+    initSliders(ds);
+  }
+  const as = document.getElementById('ev-after-sliders');
+  if (!as.innerHTML) {
+    as.innerHTML = [['ev_a_satisfaction','Satisfaction'],['ev_a_fatigue_phys','Fatigue physique'],['ev_a_fatigue_ment','Fatigue mentale']].map(([n,l]) => buildSlider(n, l)).join('');
+    initSliders(as);
+  }
+  enhanceFormControls(document.getElementById('event-form'));
+  updateEventForm();
+  if (!document.getElementById('ev-date').value) document.getElementById('ev-date').value = localDate();
+}
+
+function updateEventForm() {
+  const competition = document.getElementById('ev-type').value === 'Competition';
+  document.getElementById('ev-results-comp').classList.toggle('hidden', !competition);
+  document.getElementById('event-results-link').classList.toggle('hidden', !competition);
+  document.querySelectorAll('#ev-results-comp input').forEach(el => el.disabled = !competition);
+  document.getElementById('ev-kumi').closest('.form-group').classList.toggle('hidden', !competition);
+}
+
+function saveEvent() {
+  if (!document.getElementById('event-form').reportValidity()) return;
+  const ev = {
+    date: document.getElementById('ev-date').value || new Date().toISOString().split('T')[0],
+    type: document.getElementById('ev-type').value,
+    nom: document.getElementById('ev-name').value,
+    lieu: document.getElementById('ev-lieu').value,
+    categorie: document.getElementById('ev-cat').value,
+    classement: document.getElementById('ev-type').value === 'Competition' ? document.getElementById('ev-classement').value : '',
+    combats: document.getElementById('ev-type').value === 'Competition' ? document.getElementById('ev-combats').value : '',
+    victoires: document.getElementById('ev-type').value === 'Competition' ? document.getElementById('ev-victoires').value : '',
+    defaites: document.getElementById('ev-type').value === 'Competition' ? document.getElementById('ev-defaites').value : '',
+    avant: { stress: getSliderVal('ev_b_stress'), confiance: getSliderVal('ev_b_confiance'), motivation: getSliderVal('ev_b_motivation'), fatigue_physique: getSliderVal('ev_b_fatigue_phys'), fatigue_mentale: getSliderVal('ev_b_fatigue_ment'), sommeil_veille: document.getElementById('ev-sommeil-veille')?.value || '', alimentation_ok: document.getElementById('ev-alim-ok')?.checked, echauffement_ok: document.getElementById('ev-echauff-ok')?.checked, routine_mentale: document.getElementById('ev-routine-ok')?.checked, notes: document.getElementById('ev-before-notes')?.value || '' },
+    pendant: { concentration: getSliderVal('ev_d_concentration'), combativite: getSliderVal('ev_d_combativite'), tactique: getSliderVal('ev_d_tactique'), emotions: getSliderVal('ev_d_emotions'), kumikata: document.getElementById('ev-type').value === 'Competition' ? document.getElementById('ev-kumi').value : '', notes: document.getElementById('ev-during-notes')?.value || '' },
+    apres: { satisfaction: getSliderVal('ev_a_satisfaction'), fatigue_physique: getSliderVal('ev_a_fatigue_phys'), fatigue_mentale: getSliderVal('ev_a_fatigue_ment'), blessure: document.getElementById('ev-blessure')?.checked, apprentissages: document.getElementById('ev-apprentissages')?.value || '', a_travailler: document.getElementById('ev-a-travailler')?.value || '', notes: document.getElementById('ev-after-notes')?.value || '' }
+  };
+  D.evenements.push(ev);
+  toast('Événement ajouté à ton profil. Tu peux en saisir un autre.');
+  document.getElementById('event-form').reset();
+  document.querySelectorAll('#event-form input[type=range]').forEach(el => { delete el.dataset.answered; updateSlider(el); });
+  document.getElementById('ev-date').value = localDate();
+  updateEventForm();
+  saveDraft();
+  document.getElementById('ev-name').focus();
+}
+
+function getSliderVal(name) { const el = document.querySelector(`[name="${name}"]`); return el?.dataset.answered === 'true' ? el.value : ''; }
+
+// ============================================================
+// MARKDOWN PARSER
+// ============================================================
+function parseMarkdownProfile(md) {
+  D = { profil: {}, attaque: {}, objectifs: [], difficultes: [], evaluations: [], plan: { periodes: [], echeances: [], vie: [], mental: {} }, evenements: [] };
+  const lines = md.split('\n');
+  let section = '', subsection = '', subsubsection = '';
+  let currentEval = null, currentEvent = null, currentPeriod = null;
+  let currentObj = null, currentDiff = null;
+  let tableHeaders = [], inTable = false;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line || line === '---') { inTable = false; continue; }
+    // Section headers
+    if (line.startsWith('## ')) { section = line.replace('## ', '').trim(); subsection = ''; subsubsection = ''; inTable = false; continue; }
+    if (line.startsWith('### ')) {
+      subsection = line.replace('### ', '').trim(); subsubsection = ''; inTable = false;
+      if (section.includes('Évaluations') && subsection.includes('Évaluation du')) {
+        currentEval = { date: '', trimestre: '' };
+        const dm = subsection.match(/(\d{4}-\d{2}-\d{2})/); if (dm) currentEval.date = dm[1];
+        const tm = subsection.match(/— (.+)/); if (tm) currentEval.trimestre = tm[1];
+        D.evaluations.push(currentEval);
+      }
+      if (section.includes('Événements') && (subsection.includes('Compétition') || subsection.includes('Grade') || subsection.includes('Autre'))) {
+        currentEvent = { type: '', nom: '', date: '' };
+        const dm = subsection.match(/(\d{4}-\d{2}-\d{2})/); if (dm) currentEvent.date = dm[1];
+        const nm = subsection.match(/— (.+)/); if (nm) currentEvent.nom = nm[1];
+        if (subsection.includes('Compétition')) currentEvent.type = 'Competition';
+        else if (subsection.includes('Grade')) currentEvent.type = 'Grade';
+        D.evenements.push(currentEvent);
+      }
+      if (section.includes('Objectifs') && !subsection.includes('Saison')) {
+        currentObj = { description: subsection, type: '', statut: 0, commentaire: '' };
+        D.objectifs.push(currentObj);
+      }
+      if (section.includes('Difficultés')) {
+        currentDiff = { domaine: '', description: '', actions: '', date: '' };
+        const dm = subsection.match(/(\d{4}-\d{2}-\d{2})/); if (dm) currentDiff.date = dm[1];
+        D.difficultes.push(currentDiff);
+      }
+      if (section.includes('Plan') && subsection.includes('Saison')) { /* season info */ }
+      continue;
+    }
+    if (line.startsWith('#### ')) {
+      subsubsection = line.replace('#### ', '').trim(); inTable = false;
+      if (section.includes('Plan') && subsubsection.includes('Période')) {
+        currentPeriod = { nom: subsubsection.replace('Période : ', '').replace('Période :', '').trim() };
+        D.plan.periodes.push(currentPeriod);
+      }
+      continue;
+    }
+    // Key-value pairs: - **Key** : Value
+    const kvMatch = line.match(/^- \*\*([^*]+)\*\*\s*:\s*(.*)/);
+    if (kvMatch) {
+      const key = kvMatch[1].trim(), val = kvMatch[2].trim();
+      if (section.includes('Informations')) {
+        const kmap = {'Prénom':'prenom','Date de naissance':'date_naissance','Sexe':'sexe','Club':'club','Grade':'grade','Catégorie de poids':'categorie_poids','Entraînements par semaine':'entrainements_semaine','Latéralité':'lateralite','Année début judo':'annee_debut_judo'};
+        if (kmap[key]) D.profil[kmap[key]] = val;
+      }
+      if (section.includes('attaque')) {
+        const kmap = {'Tokui-waza':'tokui_waza','Attaques secondaires':'attaques_secondaires','Enchaînements':'enchainements','Contres':'contres','Garde préférée':'garde_preferee','Ne-waza immobilisations':'newaza_immobilisations','Ne-waza retournements':'newaza_retournements','Transitions':'transitions','Comportement vs gaucher':'vs_gaucher'};
+        if (kmap[key]) D.attaque[kmap[key]] = val;
+      }
+      if (currentObj) {
+        if (key === 'Type') currentObj.type = val;
+        if (key === 'Statut') currentObj.statut = parseInt(val) || 0;
+        if (key === 'Commentaire') currentObj.commentaire = val;
+      }
+      if (currentDiff) {
+        if (key === 'Domaine') currentDiff.domaine = val;
+        if (key === 'Description') currentDiff.description = val;
+        if (key === 'Actions') currentDiff.actions = val;
+      }
+      if (currentPeriod) {
+        if (key === 'Début') currentPeriod.debut = val;
+        if (key === 'Fin') currentPeriod.fin = val;
+        if (key === 'Objectifs') currentPeriod.objectifs = val;
+        if (key === 'Priorités physiques') currentPeriod.priorites_physiques = val;
+        if (key === 'Priorités techniques') currentPeriod.priorites_techniques = val;
+        if (key === 'Priorités mentales') currentPeriod.priorites_mentales = val;
+      }
+      if (section.includes('Plan') && subsubsection.includes('mentale')) {
+        if (key === 'Projet personnel') D.plan.mental.projet_personnel = val;
+        if (key === 'Mots-clés self-talk') D.plan.mental.mots_cles = val.split(',').map(s => s.trim());
+        if (key === 'Routine pré-compétition') D.plan.mental.routine_pre_competition = val.split('|').map(s => s.trim());
+        if (key === 'Routine pré-entraînement') D.plan.mental.routine_pre_entrainement = val.split('|').map(s => s.trim());
+      }
+      if (currentEvent) {
+        if (key === 'Lieu') currentEvent.lieu = val;
+        if (key === 'Catégorie') currentEvent.categorie = val;
+        if (key === 'Classement') currentEvent.classement = val;
+        if (key === 'Combats') currentEvent.combats = val;
+        if (key === 'Victoires') currentEvent.victoires = val;
+        if (key === 'Défaites') currentEvent.defaites = val;
+      }
+      continue;
+    }
+    // Table rows
+    if (line.startsWith('|') && !line.match(/^\|[\s-|]+$/)) {
+      const cells = line.split('|').map(c => c.trim()).filter(Boolean);
+      if (cells.length >= 2 && !inTable) { tableHeaders = cells; inTable = true; continue; }
+      if (inTable && cells.length >= 2) {
+        const key = cells[0], val = cells[1];
+        if (currentEval && section.includes('Évaluations')) {
+          // Map table values to eval data
+          const vNum = parseFloat(val.replace(/[^0-9.-]/g, '')) || val;
+          const kn = key.toLowerCase().replace(/[\s\/]/g, '_').replace(/[àâä]/g,'a').replace(/[éèêë]/g,'e').replace(/[ùûü]/g,'u').replace(/[ôö]/g,'o').replace(/[îï]/g,'i').replace(/[ç]/g,'c');
+          currentEval[kn] = typeof vNum === 'number' && !isNaN(vNum) ? vNum : val.replace(/ \/\d+$/, '').replace(/ h$/, '').replace(/ cm$/, '').replace(/ kg$/, '').replace(/ bpm$/, '').replace(/ s$/, '').replace(/ %$/, '').replace(/°$/, '').trim();
+        }
+        if (section.includes('Plan') && subsubsection.includes('Échéances') && cells.length >= 3) {
+          D.plan.echeances.push({ date: cells[0], type: cells[1], nom: cells[2], lieu: cells[3] || '', categorie: cells[4] || '', importance: cells[5] || '' });
+        }
+        if (section.includes('Plan') && subsubsection.includes('Calendrier de vie') && cells.length >= 3) {
+          D.plan.vie.push({ debut: cells[0], fin: cells[1], type: cells[2], nom: cells[3] || '' });
+        }
+      }
+    }
+  }
+  hasProfile = true;
+  document.getElementById('btn-export').disabled = false;
+  document.getElementById('event-form').reset();
+  document.querySelectorAll('#event-form input[type=range]').forEach(el => { delete el.dataset.answered; updateSlider(el); });
+  renderEvaluation();
+  saveDraft();
+  toast('Profil importé. Tu peux compléter ton évaluation.');
+  switchTab('dashboard', document.querySelectorAll('.tab-btn')[0]);
+}
+
+// ============================================================
+// MARKDOWN SERIALIZER
+// ============================================================
+function generateMarkdown() {
+  let md = '# 🥋 Profil Judo\n\n';
+  // Profil
+  md += '## 👤 Informations\n\n';
+  const pf = [['Prénom','prenom'],['Date de naissance','date_naissance'],['Sexe','sexe'],['Club','club'],['Grade','grade'],['Catégorie de poids','categorie_poids'],['Entraînements par semaine','entrainements_semaine'],['Latéralité','lateralite'],['Année début judo','annee_debut_judo']];
+  pf.forEach(([l,k]) => md += `- **${l}** : ${D.profil[k] || ''}\n`);
+  // Attaque
+  md += '\n## ⚔️ Système d\'attaque\n\n';
+  const af = [['Tokui-waza','tokui_waza'],['Attaques secondaires','attaques_secondaires'],['Enchaînements','enchainements'],['Contres','contres'],['Garde préférée','garde_preferee'],['Ne-waza immobilisations','newaza_immobilisations'],['Ne-waza retournements','newaza_retournements'],['Transitions','transitions'],['Comportement vs gaucher','vs_gaucher']];
+  af.forEach(([l,k]) => md += `- **${l}** : ${D.attaque[k] || ''}\n`);
+  // Objectifs
+  md += '\n## 🎯 Objectifs\n\n';
+  D.objectifs.forEach(o => {
+    md += `### ${o.description || 'Objectif'}\n\n`;
+    md += `- **Type** : ${o.type || ''}\n- **Statut** : ${o.statut || 0}\n- **Commentaire** : ${o.commentaire || ''}\n\n`;
+  });
+  // Difficultés
+  md += '## ⚠️ Difficultés\n\n';
+  D.difficultes.forEach(d => {
+    md += `### Difficulté du ${d.date || new Date().toISOString().split('T')[0]}\n\n`;
+    md += `- **Domaine** : ${d.domaine || ''}\n- **Description** : ${d.description || ''}\n- **Actions** : ${d.actions || ''}\n\n`;
+  });
+  // Evaluations
+  md += '## 📋 Évaluations\n\n';
+  D.evaluations.forEach(ev => {
+    md += `### Évaluation du ${ev.date} — ${ev.trimestre || ''}\n\n`;
+    // Group by category
+    const cats = {
+      'Croissance': [['Taille','taille_cm','cm'],['Poids','poids_kg','kg'],['Douleurs croissance','douleurs_croissance','/10'],['Coordination ressentie','coordination_ressentie','/10']],
+      'Sommeil': [['Durée moyenne','sommeil_duree','h'],['Qualité','sommeil_qualite','/10'],['Fatigue au réveil','fatigue_reveil','/10'],['Difficulté endormissement','difficulte_endormissement','/10'],['Réveils nocturnes','reveils_nocturnes',''],['Heure coucher','heure_coucher',''],['Heure lever','heure_lever','']],
+      'Mobilité': [['Knee-to-wall D','ktw_d','cm'],['Knee-to-wall G','ktw_g','cm'],['Rotation interne hanche D','rot_int_d','°'],['Rotation interne hanche G','rot_int_g','°'],['Rotation externe hanche D','rot_ext_d','°'],['Rotation externe hanche G','rot_ext_g','°'],['Flexion hanche','flexion_hanche','°'],['Rotation thoracique','rot_thoracique','°'],['Mobilité épaule D','mob_epaule_d','°'],['Mobilité épaule G','mob_epaule_g','°'],['Douleur pendant test','douleur_mobilite','']],
+      'Force': [['Squat','squat',''],['Tirage','tirage',''],['Poussée','poussee',''],['Chaîne postérieure','chaine_post',''],['Gainage','gainage','s'],['Préhension D','grip_d','kg'],['Préhension G','grip_g','kg'],['Qualité technique','qualite_tech_force','/3']],
+      'Explosivité': [['CMJ','cmj','cm'],['Saut horizontal','saut_horizontal','cm'],['Sprint 10m','sprint_10m','s']],
+      'SJFT': [['Projections totales','sjft_projections',''],['FC fin','sjft_fc_fin','bpm'],['FC 1 min','sjft_fc_1min','bpm'],['Indice SJFT','sjft_index','']],
+      'Stress et mental': [['Stress','stress','/10'],['Gestion du stress','gestion_stress','/10'],['Plaisir','plaisir','/10'],['Motivation','motivation','/10'],['Concentration','concentration','/10'],['Confiance','confiance','/10'],['Fatigue mentale','fatigue_mentale','/10'],['Agitation mentale','agitation_mentale','/10'],['Capacité recentrage','recentrage','/10']],
+      'Écrans': [['Temps récréatif moyen','ecran_heures','h/jour'],['Utilisation coucher','ecran_coucher',''],['Smartphone chambre nuit','smartphone_chambre',''],['Temps réseaux avant entraînement','ecran_avant_training','']],
+    };
+    Object.entries(cats).forEach(([cat, fields]) => {
+      const hasData = fields.some(([,k]) => ev[k] !== undefined && ev[k] !== '');
+      if (!hasData) return;
+      md += `#### ${cat}\n\n| Mesure | Valeur |\n|---|---|\n`;
+      fields.forEach(([label, key, unit]) => {
+        let v = ev[key];
+        if (v === undefined || v === '') return;
+        if (v === true) v = 'Oui'; if (v === false) v = 'Non';
+        md += `| ${label} | ${v} ${unit} |\n`;
+      });
+      md += '\n';
+    });
+  });
+  // Plan
+  md += '## 📅 Plan de préparation\n\n';
+  md += '### Saison ' + (D.plan.saison || new Date().getFullYear() + '-' + (new Date().getFullYear() + 1)) + '\n\n';
+  (D.plan.periodes || []).forEach(p => {
+    md += `#### Période : ${p.nom || ''}\n\n`;
+    md += `- **Début** : ${p.debut || ''}\n- **Fin** : ${p.fin || ''}\n`;
+    if (p.objectifs) md += `- **Objectifs** : ${p.objectifs}\n`;
+    if (p.priorites_physiques) md += `- **Priorités physiques** : ${p.priorites_physiques}\n`;
+    if (p.priorites_techniques) md += `- **Priorités techniques** : ${p.priorites_techniques}\n`;
+    if (p.priorites_mentales) md += `- **Priorités mentales** : ${p.priorites_mentales}\n`;
+    md += '\n';
+  });
+  if (D.plan.echeances && D.plan.echeances.length > 0) {
+    md += '#### Échéances\n\n| Date | Type | Nom | Lieu | Catégorie | Importance |\n|---|---|---|---|---|---|\n';
+    D.plan.echeances.forEach(e => md += `| ${e.date||''} | ${e.type||''} | ${e.nom||''} | ${e.lieu||''} | ${e.categorie||''} | ${e.importance||''} |\n`);
+    md += '\n';
+  }
+  if (D.plan.vie && D.plan.vie.length > 0) {
+    md += '#### Calendrier de vie\n\n| Début | Fin | Type | Nom |\n|---|---|---|---|\n';
+    D.plan.vie.forEach(e => md += `| ${e.debut||''} | ${e.fin||''} | ${e.type||''} | ${e.nom||''} |\n`);
+    md += '\n';
+  }
+  const m = D.plan.mental || {};
+  md += '#### Préparation mentale\n\n';
+  if (m.projet_personnel) md += `- **Projet personnel** : ${m.projet_personnel}\n`;
+  if (m.mots_cles) md += `- **Mots-clés self-talk** : ${(m.mots_cles||[]).join(', ')}\n`;
+  if (m.routine_pre_competition) md += `- **Routine pré-compétition** : ${(m.routine_pre_competition||[]).join(' | ')}\n`;
+  if (m.routine_pre_entrainement) md += `- **Routine pré-entraînement** : ${(m.routine_pre_entrainement||[]).join(' | ')}\n`;
+  md += '\n';
+  // Events
+  md += '## 🏆 Événements\n\n';
+  D.evenements.forEach(ev => {
+    md += `### ${ev.type || 'Événement'} du ${ev.date || ''} — ${ev.nom || ''}\n\n`;
+    md += '#### Informations\n\n';
+    md += `- **Lieu** : ${ev.lieu || ''}\n- **Catégorie** : ${ev.categorie || ''}\n\n`;
+    md += '#### Résultats\n\n';
+    md += `- **Classement** : ${ev.classement || ''}\n- **Combats** : ${ev.combats || ''}\n- **Victoires** : ${ev.victoires || ''}\n- **Défaites** : ${ev.defaites || ''}\n\n`;
+    if (ev.avant) {
+      md += '#### État avant\n\n| Mesure | Valeur |\n|---|---|\n';
+      Object.entries(ev.avant).forEach(([k, v]) => { if (v !== '' && v !== undefined) md += `| ${k.replace(/_/g,' ')} | ${v === true ? 'Oui' : v === false ? 'Non' : v} |\n`; });
+      md += '\n';
+    }
+    if (ev.pendant) {
+      md += '#### État pendant\n\n| Mesure | Valeur |\n|---|---|\n';
+      Object.entries(ev.pendant).forEach(([k, v]) => { if (v !== '' && v !== undefined) md += `| ${k.replace(/_/g,' ')} | ${v} |\n`; });
+      md += '\n';
+    }
+    if (ev.apres) {
+      md += '#### État après\n\n| Mesure | Valeur |\n|---|---|\n';
+      Object.entries(ev.apres).forEach(([k, v]) => { if (v !== '' && v !== undefined) md += `| ${k.replace(/_/g,' ')} | ${v === true ? 'Oui' : v === false ? 'Non' : v} |\n`; });
+      md += '\n';
+    }
+  });
+  return md;
+}
+
+// ============================================================
+// FILE IMPORT / EXPORT
+// ============================================================
+document.getElementById('file-import').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => parseMarkdownProfile(ev.target.result);
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+function exportProfile() {
+  if (!hasProfile) { toast('Aucun profil à exporter', 'error'); return; }
+  const md = generateMarkdown();
+  const blob = new Blob([md], { type: 'text/markdown' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  const name = D.profil.prenom || 'judoka';
+  const date = new Date().toISOString().split('T')[0];
+  a.download = `profil_${name}_${date}.md`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('💾 Profil exporté !');
+}
+
+// Drag and drop
+document.addEventListener('dragover', e => { e.preventDefault(); document.body.style.outline = '3px dashed var(--gold)'; });
+document.addEventListener('dragleave', () => { document.body.style.outline = 'none'; });
+document.addEventListener('drop', e => {
+  e.preventDefault(); document.body.style.outline = 'none';
+  const file = e.dataTransfer.files[0];
+  if (file && (file.name.endsWith('.md') || file.name.endsWith('.txt'))) {
+    const reader = new FileReader();
+    reader.onload = ev => parseMarkdownProfile(ev.target.result);
+    reader.readAsText(file);
+  }
+});
+
+// ============================================================
+// INIT
+// ============================================================
+const DRAFT_KEY = 'judo-plan-brouillon-v1';
+let draftTimer;
+let draftReady = false;
+
+function localDate() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function formSnapshot(id) {
+  return [...document.querySelectorAll(`#${id} input, #${id} select, #${id} textarea`)]
+    .filter(el => el.type !== 'file' && (el.name || el.id))
+    .map(el => ({ key: el.name || el.id, value: el.type === 'checkbox' ? el.checked : el.value, answered: el.dataset.answered === 'true' }));
+}
+
+function restoreForm(id, values = []) {
+  const controls = [...document.querySelectorAll(`#${id} input, #${id} select, #${id} textarea`)];
+  for (const field of values) {
+    const el = controls.find(control => (control.name || control.id) === field.key);
+    if (!el || el.type === 'file') continue;
+    if (el.type === 'checkbox') el.checked = field.value === true;
+    else el.value = field.value;
+    if (el.type === 'range') { el.dataset.answered = String(field.answered === true); updateSlider(el); }
+  }
+}
+
+function scheduleDraft() {
+  if (!draftReady) return;
+  clearTimeout(draftTimer);
+  draftTimer = setTimeout(saveDraft, 250);
+}
+
+function saveDraft() {
+  if (!draftReady) return;
+  clearTimeout(draftTimer);
+  try {
+    localStorage.setItem(DRAFT_KEY, JSON.stringify({
+      version: 1, data: D, hasProfile, objectives: tempObjectives, difficulties: tempDifficulties,
+      evaluation: formSnapshot('eval-form'), event: formSnapshot('event-form'),
+      tab: document.querySelector('.tab-content.active')?.id || 'tab-dashboard'
+    }));
+    document.getElementById('draft-status').textContent = 'Brouillon gardé sur cet appareil · Exporter crée ton fichier profil.';
+  } catch {
+    document.getElementById('draft-status').textContent = 'Brouillon en mémoire seulement : garde cette page ouverte et exporte ton profil.';
+  }
+}
+
+function restoreDraft() {
+  let draft = null;
+  try {
+    const candidate = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null');
+    if (candidate?.version === 1 && candidate.data?.profil && candidate.data?.attaque && candidate.data?.plan?.mental
+      && ['objectifs','difficultes','evaluations','evenements'].every(k => Array.isArray(candidate.data[k]))
+      && ['periodes','echeances','vie'].every(k => Array.isArray(candidate.data.plan[k]))
+      && ['objectives','difficulties','evaluation','event'].every(k => Array.isArray(candidate[k]))) {
+      draft = candidate; D = draft.data; hasProfile = draft.hasProfile === true;
+    }
+  } catch {
+    document.getElementById('draft-status').textContent = 'Brouillon local indisponible. Pense à exporter ton profil.';
+  }
+  renderEvaluation();
+  renderPlan();
+  renderEventTab();
+  enhanceFormControls();
+  document.getElementById('btn-export').disabled = !hasProfile;
+  if (draft) {
+    tempObjectives = draft.objectives; tempDifficulties = draft.difficulties;
+    renderObjectivesForm(); renderDifficultiesForm();
+    restoreForm('eval-form', draft.evaluation);
+    restoreForm('event-form', draft.event);
+    updateEvaluationContext(); updateEventForm(); calcSJFT(); calcLoss();
+    document.getElementById('draft-status').textContent = 'Brouillon retrouvé sur cet appareil. Tu peux reprendre.';
+  }
+  const tabs = ['dashboard','evaluation','plan','event'];
+  const active = draft?.tab?.replace('tab-','');
+  const index = Math.max(0, tabs.indexOf(active));
+  switchTab(tabs[index], document.querySelectorAll('.tab-btn')[index]);
+  draftReady = true;
+  document.addEventListener('input', event => {
+    if (event.target.closest('#eval-form')) buildSummary();
+    scheduleDraft();
+  });
+  document.addEventListener('change', scheduleDraft);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) saveDraft(); });
+  window.addEventListener('pagehide', saveDraft);
+}
+
+window.addEventListener('load', () => {
+  restoreDraft();
+});
+</script>
+</body>
+</html>
